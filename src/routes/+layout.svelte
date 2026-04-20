@@ -1,10 +1,11 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { getTheme, setTheme } from '$lib/utils/theme';
+	import { getTheme, setTheme, applyTheme, setupThemeListener } from '$lib/utils/theme';
 	import type { Theme } from '$lib/utils/theme';
 	import { getLanguage, setLanguage, getTranslations } from '$lib/utils/i18n';
 	import type { Language } from '$lib/utils/i18n';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
 	let sidebarOpen = $state(true);
@@ -14,7 +15,12 @@
 	let languageHoverOpen = $state(false);
 	let theme = $state(getTheme());
 	let language = $state(getLanguage());
-	const t = getTranslations();
+	let t = $state(getTranslations());
+
+	onMount(() => {
+		applyTheme(theme);
+		setupThemeListener();
+	});
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
@@ -34,6 +40,7 @@
 		setLanguage(newLanguage);
 		language = newLanguage;
 		languageHoverOpen = false;
+		t = getTranslations();
 	}
 </script>
 
