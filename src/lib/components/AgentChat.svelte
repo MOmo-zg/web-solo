@@ -76,7 +76,7 @@
 				</div>
 				<textarea
 					bind:value={newMessage}
-					placeholder="输入你的创作想法或问题..."
+					placeholder="都发发顺丰"
 					class="flex-1 bg-transparent text-gray-200 focus:outline-none"
 					rows={1}
 					onkeydown={handleKeyPress}
