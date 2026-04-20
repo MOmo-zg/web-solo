@@ -2,6 +2,9 @@
 
 export type Language = 'zh' | 'en';
 
+// 检查是否在浏览器环境中
+const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+
 // 中文翻译
 export const zh = {
 	appName: '小说创作平台',
@@ -83,12 +86,17 @@ export const en = {
 };
 
 export function getLanguage(): Language {
-	const savedLanguage = localStorage.getItem('language') as Language | null;
-	return savedLanguage || 'zh';
+	if (isBrowser) {
+		const savedLanguage = localStorage.getItem('language') as Language | null;
+		return savedLanguage || 'zh';
+	}
+	return 'zh';
 }
 
 export function setLanguage(language: Language): void {
-	localStorage.setItem('language', language);
+	if (isBrowser) {
+		localStorage.setItem('language', language);
+	}
 }
 
 export function getTranslations(): typeof zh {
