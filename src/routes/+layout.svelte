@@ -122,7 +122,7 @@
 				</button>
 
 				{#if userMenuOpen}
-				<div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 py-1">
+			<div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-1">
 					<!-- Manage Account -->
 					<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between">
 						<span>Manage Account</span>
@@ -150,29 +150,29 @@
 						</button>
 						
 						{#if languageHoverOpen}
-						<div 
-							onmouseenter={() => languageHoverOpen = true}
-							onmouseleave={() => languageHoverOpen = false}
-							class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 py-1"
-						>
-							<button onclick={() => changeLanguage('zh')} class={`w-full text-left px-3 py-2 text-sm ${language === 'zh' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
-								<span>{t.chinese}</span>
-								{#if language === 'zh'}
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-									</svg>
-								{/if}
-							</button>
-							<button onclick={() => changeLanguage('en')} class={`w-full text-left px-3 py-2 text-sm ${language === 'en' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
-								<span>{t.english}</span>
-								{#if language === 'en'}
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-									</svg>
-								{/if}
-							</button>
-						</div>
-						{/if}
+					<div 
+						onmouseenter={() => languageHoverOpen = true}
+						onmouseleave={() => languageHoverOpen = false}
+						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-60 py-1"
+					>
+						<button onclick={() => changeLanguage('zh')} class={`w-full text-left px-3 py-2 text-sm ${language === 'zh' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+							<span>{t.chinese}</span>
+							{#if language === 'zh'}
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+								</svg>
+							{/if}
+						</button>
+						<button onclick={() => changeLanguage('en')} class={`w-full text-left px-3 py-2 text-sm ${language === 'en' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+							<span>{t.english}</span>
+							{#if language === 'en'}
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+								</svg>
+							{/if}
+						</button>
+					</div>
+					{/if}
 					</div>
 					
 					<!-- Theme -->
@@ -192,29 +192,29 @@
 						</button>
 						
 						{#if themeHoverOpen}
-						<div 
-							onmouseenter={() => themeHoverOpen = true}
-							onmouseleave={() => themeHoverOpen = false}
-							class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 py-1"
-						>
-							<button onclick={() => changeTheme('light')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
-								<span>{t.light}</span>
-								{#if theme === 'light'}
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-									</svg>
-								{/if}
-							</button>
-							<button onclick={() => changeTheme('dark')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
-								<span>{t.dark}</span>
-								{#if theme === 'dark'}
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-									</svg>
-								{/if}
-							</button>
-						</div>
-						{/if}
+					<div 
+						onmouseenter={() => themeHoverOpen = true}
+						onmouseleave={() => themeHoverOpen = false}
+						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-60 py-1"
+					>
+						<button onclick={() => changeTheme('light')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+							<span>{t.light}</span>
+							{#if theme === 'light'}
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+								</svg>
+							{/if}
+						</button>
+						<button onclick={() => changeTheme('dark')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+							<span>{t.dark}</span>
+							{#if theme === 'dark'}
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+								</svg>
+							{/if}
+						</button>
+					</div>
+					{/if}
 					</div>
 					
 					<!-- Settings -->
