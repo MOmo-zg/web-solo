@@ -41,47 +41,65 @@
 
 	{#if isOpen}
 		<div class="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
-			<div class="p-4">
-				<h3 class="text-sm font-medium text-gray-300 mb-2">{t.theme}</h3>
-				<div class="space-y-1">
-					<button
-						onclick={() => changeTheme('light')}
-						class={`w-full text-left px-3 py-2 rounded-md text-sm ${theme === 'light' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
-					>
-						{t.light}
-					</button>
-					<button
-						onclick={() => changeTheme('dark')}
-						class={`w-full text-left px-3 py-2 rounded-md text-sm ${theme === 'dark' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
-					>
-						{t.dark}
-					</button>
-					<button
-						onclick={() => changeTheme('system')}
-						class={`w-full text-left px-3 py-2 rounded-md text-sm ${theme === 'system' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
-					>
-						{t.system}
-					</button>
-				</div>
-				
-				<div class="mt-4">
-					<h3 class="text-sm font-medium text-gray-300 mb-2">{t.language}</h3>
-					<div class="space-y-1">
-						<button
-							onclick={() => changeLanguage('zh')}
-							class={`w-full text-left px-3 py-2 rounded-md text-sm ${language === 'zh' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
-						>
-							{t.chinese}
-						</button>
-						<button
-							onclick={() => changeLanguage('en')}
-							class={`w-full text-left px-3 py-2 rounded-md text-sm ${language === 'en' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
-						>
-							{t.english}
-						</button>
+			<div class="p-4 space-y-4">
+						<!-- 主题设置 -->
+						<div>
+							<h3 class="text-sm font-medium text-gray-300 mb-2">{t.theme}</h3>
+							<div class="space-y-1">
+								<button
+									onclick={() => changeTheme('light')}
+									class={`w-full text-left px-4 py-3 rounded-md text-sm ${theme === 'light' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+								>
+									{t.light}
+								</button>
+								<button
+									onclick={() => changeTheme('dark')}
+									class={`w-full text-left px-4 py-3 rounded-md text-sm ${theme === 'dark' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+								>
+									{t.dark}
+								</button>
+								<button
+									onclick={() => changeTheme('system')}
+									class={`w-full text-left px-4 py-3 rounded-md text-sm ${theme === 'system' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+								>
+									{t.system}
+								</button>
+							</div>
+						</div>
+						
+						<!-- 语言设置 -->
+						<div>
+							<h3 class="text-sm font-medium text-gray-300 mb-2">{t.language}</h3>
+							<div class="space-y-1">
+								<button
+									onclick={() => changeLanguage('zh')}
+									class={`w-full text-left px-4 py-3 rounded-md text-sm ${language === 'zh' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+								>
+									<div class="flex items-center justify-between">
+										<span>{t.chinese}</span>
+										{language === 'zh' && (
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+											</svg>
+										)}
+									</div>
+								</button>
+								<button
+									onclick={() => changeLanguage('en')}
+									class={`w-full text-left px-4 py-3 rounded-md text-sm ${language === 'en' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+								>
+									<div class="flex items-center justify-between">
+										<span>{t.english}</span>
+										{language === 'en' && (
+											<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+											</svg>
+										)}
+									</div>
+								</button>
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
 		</div>
 	{/if}
 </div>
