@@ -41,6 +41,7 @@
 
 1. **.trae/documents/PRD.md** - 产品需求文档
 2. **.trae/documents/Technical_Architecture.md** - 技术架构文档
+3. **.trae/documents/UI_Design_Guidelines.md** - UI设计指南，包含统一的交互反馈规则
 
 ### 配置文件
 
