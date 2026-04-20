@@ -150,7 +150,7 @@
 	<!-- 右侧栏 -->
 	<div class={`${rightSidebarOpen ? 'w-80' : 'w-0'} bg-gray-800 border-l border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
 		<div class="p-4 border-b border-gray-700 flex justify-between items-center">
-			<span class="font-medium">小说内容</span>
+			<span class="font-medium">小说信息</span>
 			<button onclick={toggleRightSidebar} class="text-gray-400 hover:text-white">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
@@ -159,18 +159,28 @@
 		</div>
 		
 		<div class="p-4 overflow-y-auto flex-1">
-			<!-- 小说MD内容 -->
-			<div class="prose prose-invert max-w-none">
-				<h1>奇幻冒险小说</h1>
-				<h2>第一章：勇者的觉醒</h2>
-				<p>在一个遥远的中世纪奇幻世界里，存在着魔法和各种种族。年轻的勇者艾伦拥有特殊的魔法天赋，他注定要拯救这个世界。</p>
-				<p>一天，艾伦在森林中发现了一个神秘的洞穴，里面有一颗发光的宝石。当他触摸宝石时，一股强大的力量涌入他的身体。</p>
-				<h3>第一节：神秘的宝石</h3>
-				<p>艾伦小心翼翼地拿起宝石，突然，一个古老的声音在他脑海中响起：</p>
-				<blockquote>
-					勇者啊，你被选中了。你需要收集五颗宝石来阻止邪恶的黑龙毁灭世界。
-				</blockquote>
-				<p>艾伦意识到自己的使命，他决定踏上这段危险的旅程。</p>
+			<!-- 当前小说信息 -->
+			<div class="mb-6">
+				<h2 class="text-lg font-semibold text-blue-400 mb-3">当前小说</h2>
+				<div class="bg-gray-700 rounded-md p-3">
+					<h3 class="text-white font-medium">奇幻冒险小说</h3>
+					<p class="text-gray-300 text-sm mt-1">写到：第一章 勇者的觉醒</p>
+					<p class="text-gray-400 text-xs mt-1">更新时间：2026-04-20</p>
+				</div>
+			</div>
+			
+			<!-- 模型上下文 -->
+			<div>
+				<h2 class="text-lg font-semibold text-blue-400 mb-3">模型上下文</h2>
+				<div class="bg-gray-700 rounded-md p-3">
+					<div class="text-gray-300 text-sm space-y-2">
+						<p>• 世界观：中世纪奇幻世界，存在魔法和各种种族</p>
+						<p>• 主角：年轻的勇者艾伦，拥有特殊的魔法天赋</p>
+						<p>• 情节：勇者需要收集五颗宝石来拯救世界</p>
+						<p>• 反派：邪恶的黑龙，想要毁灭世界</p>
+						<p>• 当前进度：第一章 勇者的觉醒</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
