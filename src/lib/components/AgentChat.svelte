@@ -56,7 +56,17 @@
 	<!-- 输入区域 -->
 	<div class="border-t border-gray-700 p-4">
 		<div class="bg-gray-900 rounded-lg p-3">
-			<div class="flex items-center space-x-3">
+			<!-- 输入框 -->
+			<input
+				bind:value={newMessage}
+				placeholder="都发发顺丰"
+				class="w-full bg-transparent text-gray-200 focus:outline-none mb-3"
+				onkeydown={handleKeyPress}
+				type="text"
+			/>
+			
+			<!-- 工具栏 -->
+			<div class="flex items-center justify-between">
 				<div class="flex space-x-2">
 					<button class="text-gray-400 hover:text-white p-1">
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,13 +79,6 @@
 						</svg>
 					</button>
 				</div>
-				<input
-					bind:value={newMessage}
-					placeholder="都发发顺丰"
-					class="flex-1 bg-transparent text-gray-200 focus:outline-none"
-					onkeydown={handleKeyPress}
-					type="text"
-				/>
 				<div class="flex items-center space-x-3">
 					<!-- 模型选择下拉列表 -->
 					<div class="relative">
