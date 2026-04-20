@@ -31,9 +31,14 @@
 	}
 
 	function changeTheme(newTheme: Theme) {
+		console.log('Changing theme to:', newTheme);
 		setTheme(newTheme);
 		theme = newTheme;
+		console.log('Theme state updated to:', theme);
 		themeHoverOpen = false;
+		// 确保主题被正确应用
+		applyTheme(newTheme);
+		console.log('Theme applied');
 	}
 
 	function changeLanguage(newLanguage: Language) {
@@ -200,11 +205,9 @@
 						
 						{#if themeHoverOpen}
 					<div 
-						onmouseenter={() => themeHoverOpen = true}
-						onmouseleave={() => themeHoverOpen = false}
 						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[150] py-1"
 					>
-						<button onclick={() => changeTheme('light')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+						<button onmousedown={() => changeTheme('light')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
 							<span>{t.light}</span>
 							{#if theme === 'light'}
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,7 +215,7 @@
 								</svg>
 							{/if}
 						</button>
-						<button onclick={() => changeTheme('dark')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+						<button onmousedown={() => changeTheme('dark')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
 							<span>{t.dark}</span>
 							{#if theme === 'dark'}
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
