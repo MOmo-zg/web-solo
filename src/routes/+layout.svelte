@@ -40,7 +40,7 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex">
 	<!-- 左侧边栏 -->
-	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen z-40 relative`}>
+	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-visible flex flex-col h-screen z-40 relative`}>
 		<div class="p-4 flex justify-between items-center">
 			<div class="flex items-center space-x-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,7 +108,7 @@
 		</div>
 
 		<!-- 用户信息区域 -->
-		<div class="mt-auto p-4">
+		<div class="mt-auto p-4 relative z-50">
 			<div class="relative">
 				<button onclick={() => userMenuOpen = !userMenuOpen} class="flex items-center space-x-3 w-full text-left py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">
 					<div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
@@ -122,7 +122,7 @@
 				</button>
 
 				{#if userMenuOpen}
-			<div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-1">
+			<div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[100] py-1">
 					<!-- Manage Account -->
 					<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between">
 						<span>Manage Account</span>
@@ -153,7 +153,7 @@
 					<div 
 						onmouseenter={() => languageHoverOpen = true}
 						onmouseleave={() => languageHoverOpen = false}
-						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-60 py-1"
+						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[150] py-1"
 					>
 						<button onclick={() => changeLanguage('zh')} class={`w-full text-left px-3 py-2 text-sm ${language === 'zh' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
 							<span>{t.chinese}</span>
@@ -195,7 +195,7 @@
 					<div 
 						onmouseenter={() => themeHoverOpen = true}
 						onmouseleave={() => themeHoverOpen = false}
-						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-60 py-1"
+						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[150] py-1"
 					>
 						<button onclick={() => changeTheme('light')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
 							<span>{t.light}</span>
