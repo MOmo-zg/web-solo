@@ -21,8 +21,8 @@
 		}
 	];
 
-	let newMessage = '';
-	let modelMenuOpen = false;
+	let newMessage = $state('');
+	let modelMenuOpen = $state(false);
 
 	function sendMessage() {
 		if (newMessage.trim()) {

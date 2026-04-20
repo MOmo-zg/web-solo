@@ -3,9 +3,9 @@
 	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
-	let sidebarOpen = true;
-	let rightSidebarOpen = false;
-	let userMenuOpen = false;
+	let sidebarOpen = $state(true);
+	let rightSidebarOpen = $state(true);
+	let userMenuOpen = $state(false);
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
