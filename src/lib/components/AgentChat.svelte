@@ -60,7 +60,7 @@
 			<input
 				bind:value={newMessage}
 				placeholder="都发发顺丰"
-				class="w-full bg-transparent text-gray-200 focus:outline-none mb-3 py-3"
+				class="w-full bg-transparent text-gray-200 focus:outline-none mb-3 py-3 text-left"
 				onkeydown={handleKeyPress}
 				type="text"
 			/>
