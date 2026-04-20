@@ -18,9 +18,9 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<div class="min-h-screen bg-gray-900 text-gray-200 flex">
+<div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex">
 	<!-- 左侧边栏 -->
-	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
+	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
 		<div class="p-4 flex justify-between items-center">
 			<div class="flex items-center space-x-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -102,17 +102,17 @@
 				</button>
 
 				{#if userMenuOpen}
-				<div class="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+				<div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10">
 					<div class="p-2 space-y-1">
-						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
 							Manage Account
 						</button>
 						<SettingsDropdown />
-						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
 							Download SOLO Desktop
 						</button>
-						<div class="border-t border-gray-700 my-1"></div>
-						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-red-400 hover:bg-gray-700 transition-colors">
+						<div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
 							Log Out
 						</button>
 					</div>
@@ -125,7 +125,7 @@
 	<!-- 主内容区域 -->
 	<div class="flex-1 h-screen flex flex-col">
 		<!-- 顶部工具栏 -->
-		<div class="bg-gray-800 p-4 flex justify-between items-center">
+		<div class="bg-gray-50 dark:bg-gray-800 p-4 flex justify-between items-center">
 			<div class="flex items-center space-x-4">
 				{#if !sidebarOpen}
 					<button onclick={toggleSidebar} class="text-gray-400 hover:text-white">
@@ -150,7 +150,7 @@
 	</div>
 	
 	<!-- 右侧栏 -->
-	<div class={`${rightSidebarOpen ? 'w-80' : 'w-0'} bg-gray-800 border-l border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
+	<div class={`${rightSidebarOpen ? 'w-80' : 'w-0'} bg-gray-50 dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
 		<div class="p-4 border-b border-gray-700 flex justify-between items-center">
 			<span class="font-medium">小说信息</span>
 			<button onclick={toggleRightSidebar} class="text-gray-400 hover:text-white">
