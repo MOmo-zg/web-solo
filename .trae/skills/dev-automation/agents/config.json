@@ -1,0 +1,46 @@
+{
+  "agents": [
+    {
+      "name": "dev-agent",
+      "description": "开发代理，负责代码生成和修改",
+      "tasks": [
+        "generate-code",
+        "modify-code",
+        "refactor-code"
+      ],
+      "config": {
+        "template_dir": ".trae/skills/dev-automation/templates",
+        "output_dir": "src"
+      }
+    },
+    {
+      "name": "review-agent",
+      "description": "审查代理，负责检查代码质量和完整性",
+      "tasks": [
+        "code-audit",
+        "quality-check",
+        "completeness-review"
+      ],
+      "config": {
+        "rules": {
+          "code-quality": true,
+          "security": true,
+          "documentation": true
+        }
+      }
+    },
+    {
+      "name": "test-agent",
+      "description": "测试代理，负责测试功能是否符合预期",
+      "tasks": [
+        "run-tests",
+        "validate-functionality",
+        "performance-test"
+      ],
+      "config": {
+        "test_dir": "tests",
+        "coverage_threshold": 80
+      }
+    }
+  ]
+}

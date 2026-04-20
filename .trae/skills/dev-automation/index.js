@@ -8,6 +8,9 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import DevAgent from './agents/dev-agent.js';
+import ReviewAgent from './agents/review-agent.js';
+import TestAgent from './agents/test-agent.js';
 
 class DevAutomation {
   constructor(config = {}) {
@@ -39,6 +42,11 @@ class DevAutomation {
       },
       ...config
     };
+    
+    // 初始化子代理
+    this.devAgent = new DevAgent();
+    this.reviewAgent = new ReviewAgent();
+    this.testAgent = new TestAgent();
   }
 
   /**
@@ -55,33 +63,73 @@ class DevAutomation {
    * @param {string} template - 模板名称
    * @param {string} output - 输出路径
    */
-  generate(template, output) {
+  async generate(template, output) {
     console.log(`Generating code from template ${template} to ${output}...`);
-    // 这里可以实现代码生成逻辑
-    console.log('Code generated successfully!');
+    const result = await this.devAgent.runTask('generate-code', { template, output });
+    if (result.success) {
+      console.log('Code generated successfully!');
+    } else {
+      console.error(`Code generation failed: ${result.error}`);
+      process.exit(1);
+    }
   }
 
   /**
    * 运行代码审核
    * @param {string} path - 代码路径
    */
-  audit(path) {
+  async audit(path) {
     console.log(`Auditing code at ${path}...`);
-    // 这里可以实现代码审核逻辑
-    console.log('Code audit completed successfully!');
+    
+    // 检查路径是否存在
+    if (!fs.existsSync(path)) {
+      console.error(`Path ${path} not found`);
+      process.exit(1);
+    }
+    
+    // 检查是否是目录
+    const stats = fs.statSync(path);
+    if (stats.isDirectory()) {
+      // 遍历目录下的所有文件
+      const files = this.getFilesInDirectory(path);
+      let allPassed = true;
+      
+      for (const file of files) {
+        const result = await this.reviewAgent.runTask('code-audit', { filePath: file });
+        if (!result.success) {
+          allPassed = false;
+        }
+      }
+      
+      if (allPassed) {
+        console.log('Code audit completed successfully!');
+      } else {
+        console.error('Code audit failed!');
+        process.exit(1);
+      }
+    } else {
+      // 审核单个文件
+      const result = await this.reviewAgent.runTask('code-audit', { filePath: path });
+      if (result.success) {
+        console.log('Code audit completed successfully!');
+      } else {
+        console.error('Code audit failed!');
+        process.exit(1);
+      }
+    }
   }
 
   /**
    * 运行测试
    * @param {string} path - 测试路径
    */
-  test(path) {
+  async test(path) {
     console.log(`Running tests at ${path}...`);
-    try {
-      execSync('npm test', { stdio: 'inherit' });
+    const result = await this.testAgent.runTask('run-tests', { testPath: path });
+    if (result.success) {
       console.log('Tests passed successfully!');
-    } catch (error) {
-      console.error('Tests failed!');
+    } else {
+      console.error(`Tests failed: ${result.error}`);
       process.exit(1);
     }
   }
@@ -110,10 +158,10 @@ class DevAutomation {
   /**
    * 运行完整流程
    */
-  pipeline() {
+  async pipeline() {
     console.log('Running full dev automation pipeline...');
     
-    this.config.workflow.steps.forEach(step => {
+    for (const step of this.config.workflow.steps) {
       if (step.enabled) {
         console.log(`\n=== Running step: ${step.name} ===`);
         switch (step.name) {
@@ -121,10 +169,10 @@ class DevAutomation {
             // 代码生成逻辑
             break;
           case 'code-audit':
-            this.audit(this.config.paths.source);
+            await this.audit(this.config.paths.source);
             break;
           case 'testing':
-            this.test(this.config.paths.source);
+            await this.test(this.config.paths.source);
             break;
           case 'docs-update':
             this.updateDocs();
@@ -134,7 +182,7 @@ class DevAutomation {
             break;
         }
       }
-    });
+    }
     
     console.log('\n=== Pipeline completed successfully! ===');
   }
@@ -251,52 +299,81 @@ class DevAutomation {
     
     return descriptions[filePath] || '文件描述';
   }
+
+  /**
+   * 获取目录中的所有文件
+   * @param {string} dir - 目录路径
+   * @returns {string[]} 文件路径数组
+   */
+  getFilesInDirectory(dir) {
+    const files = [];
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        files.push(...this.getFilesInDirectory(fullPath));
+      } else {
+        // 只处理 JavaScript 和 TypeScript 文件
+        if (entry.name.endsWith('.js') || entry.name.endsWith('.ts') || entry.name.endsWith('.svelte')) {
+          files.push(fullPath);
+        }
+      }
+    }
+    
+    return files;
+  }
 }
 
 // 命令行接口
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
   
   const devAutomation = new DevAutomation();
   
-  switch (command) {
-    case 'init':
-      devAutomation.init();
-      break;
-    case 'generate':
-      devAutomation.generate(args[1], args[2]);
-      break;
-    case 'audit':
-      devAutomation.audit(args[1]);
-      break;
-    case 'test':
-      devAutomation.test(args[1]);
-      break;
-    case 'docs':
-      if (args[1] === 'update') {
-        devAutomation.updateDocs();
-      }
-      break;
-    case 'index':
-      if (args[1] === 'update') {
-        devAutomation.updateIndex();
-      }
-      break;
-    case 'pipeline':
-      devAutomation.pipeline();
-      break;
-    default:
-      console.log('Usage: dev-automation <command> [options]');
-      console.log('Commands:');
-      console.log('  init                 Initialize project');
-      console.log('  generate <template> <output>  Generate code from template');
-      console.log('  audit <path>         Audit code quality');
-      console.log('  test <path>          Run tests');
-      console.log('  docs update          Update documentation');
-      console.log('  index update         Update project index');
-      console.log('  pipeline             Run full pipeline');
-      break;
+  try {
+    switch (command) {
+      case 'init':
+        devAutomation.init();
+        break;
+      case 'generate':
+        await devAutomation.generate(args[1], args[2]);
+        break;
+      case 'audit':
+        await devAutomation.audit(args[1]);
+        break;
+      case 'test':
+        await devAutomation.test(args[1]);
+        break;
+      case 'docs':
+        if (args[1] === 'update') {
+          devAutomation.updateDocs();
+        }
+        break;
+      case 'index':
+        if (args[1] === 'update') {
+          devAutomation.updateIndex();
+        }
+        break;
+      case 'pipeline':
+        await devAutomation.pipeline();
+        break;
+      default:
+        console.log('Usage: dev-automation <command> [options]');
+        console.log('Commands:');
+        console.log('  init                 Initialize project');
+        console.log('  generate <template> <output>  Generate code from template');
+        console.log('  audit <path>         Audit code quality');
+        console.log('  test <path>          Run tests');
+        console.log('  docs update          Update documentation');
+        console.log('  index update         Update project index');
+        console.log('  pipeline             Run full pipeline');
+        break;
+    }
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
 }
 
