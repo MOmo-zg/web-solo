@@ -29,12 +29,13 @@
 
 ### 核心文件
 
-1. **src/routes/+page.svelte** - 首页，显示项目列表
-2. **src/routes/create/+page.svelte** - 创建新项目页面
-3. **src/routes/project/[id]/+page.svelte** - 项目编辑页面
-4. **src/lib/components/SettingsDropdown.svelte** - 主题和语言设置组件
-5. **src/lib/utils/theme.ts** - 主题管理工具
-6. **src/lib/utils/i18n.ts** - 国际化工具
+1. **src/routes/+layout.svelte** - 主布局组件，包含左侧边栏
+2. **src/routes/+page.svelte** - 首页，显示项目列表
+3. **src/routes/create/+page.svelte** - 创建新项目页面
+4. **src/routes/project/[id]/+page.svelte** - 项目编辑页面
+5. **src/lib/components/SettingsDropdown.svelte** - 主题和语言设置组件
+6. **src/lib/utils/theme.ts** - 主题管理工具
+7. **src/lib/utils/i18n.ts** - 国际化工具
 
 ### 文档文件
 
