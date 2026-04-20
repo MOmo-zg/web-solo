@@ -4,9 +4,9 @@
 	import { getLanguage, setLanguage, getTranslations } from '../utils/i18n';
 	import type { Language } from '../utils/i18n';
 
-	let isOpen = false;
-	let theme = getTheme();
-	let language = getLanguage();
+	let isOpen = $state(false);
+	let theme = $state(getTheme());
+	let language = $state(getLanguage());
 	const t = getTranslations();
 
 	function toggleDropdown() {
