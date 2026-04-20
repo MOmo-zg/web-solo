@@ -133,7 +133,16 @@
 	<div class="flex-1 h-screen flex flex-col">
 		<!-- 顶部工具栏 -->
 		<div class="bg-gray-800 p-4 flex justify-between items-center">
-			<h1 class="text-xl font-semibold text-blue-400">小说创作助手</h1>
+			<div class="flex items-center space-x-4">
+				{#if !sidebarOpen}
+					<button onclick={toggleSidebar} class="text-gray-400 hover:text-white">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+						</svg>
+					</button>
+				{/if}
+				<h1 class="text-xl font-semibold text-blue-400">小说创作助手</h1>
+			</div>
 			<button onclick={toggleRightSidebar} class="text-gray-400 hover:text-white">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
