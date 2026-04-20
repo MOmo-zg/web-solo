@@ -1,5 +1,11 @@
 <script lang="ts">
 	import { redirect } from '@sveltejs/kit';
+	import SettingsDropdown from '$lib/components/SettingsDropdown.svelte';
+	import { getTheme, applyTheme, setupThemeListener } from '$lib/utils/theme';
+
+	// 初始化主题
+	applyTheme(getTheme());
+	setupThemeListener();
 
 	let projectName = $state('');
 	let projectType = $state('');
@@ -32,6 +38,7 @@
 					</svg>
 					<span>我的资料</span>
 				</button>
+				<SettingsDropdown />
 				<button class="flex items-center space-x-1 hover:text-[#ffd700] transition-colors">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
