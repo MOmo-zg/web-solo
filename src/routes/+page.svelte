@@ -1,4 +1,12 @@
 <script lang="ts">
+	import SettingsDropdown from '$lib/components/SettingsDropdown.svelte';
+	import { getTranslations } from '$lib/utils/i18n';
+	import { getTheme, applyTheme, setupThemeListener } from '$lib/utils/theme';
+
+	// 初始化主题
+	applyTheme(getTheme());
+	setupThemeListener();
+
 	// 模拟项目数据
 	const mockProjects = [
 		{
@@ -28,6 +36,7 @@
 	];
 
 	let projects = mockProjects;
+	const t = getTranslations();
 </script>
 
 <div class="min-h-screen bg-gray-900 text-gray-200">
@@ -45,13 +54,14 @@
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 					</svg>
-					<span>Profile</span>
+					<span>{t.profile}</span>
 				</button>
+				<SettingsDropdown />
 				<button class="flex items-center space-x-1 hover:text-blue-400 transition-colors">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
 					</svg>
-					<span>Logout</span>
+					<span>{t.logout}</span>
 				</button>
 			</div>
 		</div>
@@ -61,12 +71,12 @@
 	<div class="container mx-auto px-4 py-8">
 		<!-- 页面标题和创建按钮 -->
 		<div class="flex justify-between items-center mb-8">
-			<h1 class="text-3xl font-bold text-white">My Projects</h1>
+			<h1 class="text-3xl font-bold text-white">{t.myProjects}</h1>
 			<a href="/create" class="bg-blue-600 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors flex items-center space-x-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 				</svg>
-				<span>New Project</span>
+				<span>{t.newProject}</span>
 			</a>
 		</div>
 
