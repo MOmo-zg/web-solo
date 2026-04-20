@@ -125,7 +125,7 @@
 	</div>
 	
 	<!-- 主内容区域 -->
-	<div class="flex-1 h-screen p-4">
+	<div class="flex-1 h-screen flex items-stretch p-4">
 		{@render children()}
 	</div>
 </div>

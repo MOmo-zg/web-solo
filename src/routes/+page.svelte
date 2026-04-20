@@ -8,6 +8,6 @@
 </script>
 
 <!-- Agent聊天对话 -->
-<div class="h-screen w-full">
+<div class="h-full w-full">
 	<AgentChat />
 </div>
