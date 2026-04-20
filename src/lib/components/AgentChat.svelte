@@ -39,13 +39,13 @@
 	}
 </script>
 
-<div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col">
+<div class="h-full flex flex-col">
 
 	<!-- 聊天内容 -->
 	<div class="flex-1 overflow-y-auto p-4 space-y-4">
 		{#each messages as message}
 			<div class={`flex ${message.sender === 'agent' ? 'justify-start' : 'justify-end'}`}>
-				<div class={`max-w-[80%] ${message.sender === 'agent' ? 'bg-gray-100 dark:bg-gray-700' : 'bg-blue-600'} rounded-lg p-3`}>
+				<div class={`max-w-[80%] ${message.sender === 'agent' ? 'bg-gray-100 dark:bg-gray-700' : 'bg-blue-500'} rounded-lg p-3`}>
 					<p class="text-gray-900 dark:text-gray-200">{message.content}</p>
 					<div class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">{message.time}</div>
 				</div>
@@ -75,7 +75,7 @@
 					</button>
 					<button class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white p-1">
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 0 002 2z" />
 						</svg>
 					</button>
 				</div>
@@ -85,23 +85,21 @@
 						<button onclick={() => modelMenuOpen = !modelMenuOpen} class="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white cursor-pointer">
 							<span>SOLO Auto Model</span>
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7 7" />
 							</svg>
 						</button>
 						
 						{#if modelMenuOpen}
-							<div class="absolute bottom-full right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 w-48">
-								<div class="p-2 space-y-1">
-									<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-										SOLO Auto Model
-									</button>
-									<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-										SOLO Creative Model
-									</button>
-									<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-										SOLO Pro Model
-									</button>
-								</div>
+							<div class="absolute bottom-full right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 w-48 py-1">
+								<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+									SOLO Auto Model
+								</button>
+								<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+									SOLO Creative Model
+								</button>
+								<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+									SOLO Pro Model
+								</button>
 							</div>
 						{/if}
 					</div>

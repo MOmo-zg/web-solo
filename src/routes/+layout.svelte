@@ -1,12 +1,20 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import SettingsDropdown from '$lib/components/SettingsDropdown.svelte';
+	import { getTheme, setTheme } from '$lib/utils/theme';
+	import type { Theme } from '$lib/utils/theme';
+	import { getLanguage, setLanguage, getTranslations } from '$lib/utils/i18n';
+	import type { Language } from '$lib/utils/i18n';
 
 	let { children } = $props();
 	let sidebarOpen = $state(true);
 	let rightSidebarOpen = $state(true);
 	let userMenuOpen = $state(false);
+	let themeHoverOpen = $state(false);
+	let languageHoverOpen = $state(false);
+	let theme = $state(getTheme());
+	let language = $state(getLanguage());
+	const t = getTranslations();
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
@@ -14,6 +22,18 @@
 
 	function toggleRightSidebar() {
 		rightSidebarOpen = !rightSidebarOpen;
+	}
+
+	function changeTheme(newTheme: Theme) {
+		setTheme(newTheme);
+		theme = newTheme;
+		themeHoverOpen = false;
+	}
+
+	function changeLanguage(newLanguage: Language) {
+		setLanguage(newLanguage);
+		language = newLanguage;
+		languageHoverOpen = false;
 	}
 </script>
 
@@ -90,34 +110,131 @@
 		<!-- 用户信息区域 -->
 		<div class="mt-auto p-4">
 			<div class="relative">
-				<button onclick={() => userMenuOpen = !userMenuOpen} class="flex items-center space-x-3 w-full text-left py-2 hover:bg-gray-700 rounded-md transition-colors">
-					<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<button onclick={() => userMenuOpen = !userMenuOpen} class="flex items-center space-x-3 w-full text-left py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">
+					<div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 						</svg>
 					</div>
 					<div class="flex-1">
-					<div class="text-sm font-medium text-gray-300">用户21002254381</div>
-				</div>
+						<div class="text-sm font-medium text-gray-900 dark:text-gray-300">用户21002254381</div>
+					</div>
 				</button>
 
 				{#if userMenuOpen}
-				<div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10">
-					<div class="p-2 space-y-1">
-						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-							Manage Account
+				<div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10 py-1">
+					<!-- Manage Account -->
+					<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between">
+						<span>Manage Account</span>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4" />
+						</svg>
+					</button>
+					
+					<div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+					
+					<!-- Language -->
+					<div class="relative">
+						<button 
+							onmouseenter={() => { languageHoverOpen = true; themeHoverOpen = false; }}
+							onmouseleave={() => languageHoverOpen = false}
+							class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
+						>
+							<span>Language</span>
+							<div class="flex items-center space-x-2">
+								<span class="text-gray-500 dark:text-gray-400">{language === 'zh' ? t.chinese : t.english}</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+								</svg>
+							</div>
 						</button>
-						<SettingsDropdown />
-						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-							Download SOLO Desktop
-						</button>
-						<div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-							Log Out
-						</button>
+						
+						{#if languageHoverOpen}
+						<div 
+							onmouseenter={() => languageHoverOpen = true}
+							onmouseleave={() => languageHoverOpen = false}
+							class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 py-1"
+						>
+							<button onclick={() => changeLanguage('zh')} class={`w-full text-left px-3 py-2 text-sm ${language === 'zh' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+								<span>{t.chinese}</span>
+								{#if language === 'zh'}
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+									</svg>
+								{/if}
+							</button>
+							<button onclick={() => changeLanguage('en')} class={`w-full text-left px-3 py-2 text-sm ${language === 'en' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+								<span>{t.english}</span>
+								{#if language === 'en'}
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+									</svg>
+								{/if}
+							</button>
+						</div>
+						{/if}
 					</div>
+					
+					<!-- Theme -->
+					<div class="relative">
+						<button 
+							onmouseenter={() => { themeHoverOpen = true; languageHoverOpen = false; }}
+							onmouseleave={() => themeHoverOpen = false}
+							class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
+						>
+							<span>Theme</span>
+							<div class="flex items-center space-x-2">
+								<span class="text-gray-500 dark:text-gray-400">{theme === 'light' ? t.light : theme === 'dark' ? t.dark : t.system}</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+								</svg>
+							</div>
+						</button>
+						
+						{#if themeHoverOpen}
+						<div 
+							onmouseenter={() => themeHoverOpen = true}
+							onmouseleave={() => themeHoverOpen = false}
+							class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 py-1"
+						>
+							<button onclick={() => changeTheme('light')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+								<span>{t.light}</span>
+								{#if theme === 'light'}
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+									</svg>
+								{/if}
+							</button>
+							<button onclick={() => changeTheme('dark')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+								<span>{t.dark}</span>
+								{#if theme === 'dark'}
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+									</svg>
+								{/if}
+							</button>
+						</div>
+						{/if}
+					</div>
+					
+					<!-- Settings -->
+					<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+						Settings
+					</button>
+					
+					<!-- Download SOLO Desktop -->
+					<button class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+						Download SOLO Desktop
+					</button>
+					
+					<div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+					
+					<!-- Log Out -->
+					<button class="w-full text-left px-3 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+						Log Out
+					</button>
 				</div>
-			{/if}
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -163,19 +280,19 @@
 		<div class="p-4 overflow-y-auto flex-1">
 			<!-- 当前小说信息 -->
 			<div class="mb-6">
-				<h2 class="text-lg font-semibold text-blue-400 mb-3">当前小说</h2>
-				<div class="bg-gray-700 rounded-md p-3">
-					<h3 class="text-white font-medium">奇幻冒险小说</h3>
-					<p class="text-gray-300 text-sm mt-1">写到：第一章 勇者的觉醒</p>
-					<p class="text-gray-400 text-xs mt-1">更新时间：2026-04-20</p>
+				<h2 class="text-lg font-semibold text-blue-500 dark:text-blue-400 mb-3">当前小说</h2>
+				<div class="bg-gray-100 dark:bg-gray-700 rounded-md p-3">
+					<h3 class="text-gray-900 dark:text-white font-medium">奇幻冒险小说</h3>
+					<p class="text-gray-600 dark:text-gray-300 text-sm mt-1">写到：第一章 勇者的觉醒</p>
+					<p class="text-gray-500 dark:text-gray-400 text-xs mt-1">更新时间：2026-04-20</p>
 				</div>
 			</div>
 			
 			<!-- 模型上下文 -->
 			<div>
-				<h2 class="text-lg font-semibold text-blue-400 mb-3">模型上下文</h2>
-				<div class="bg-gray-700 rounded-md p-3">
-					<div class="text-gray-300 text-sm space-y-2">
+				<h2 class="text-lg font-semibold text-blue-500 dark:text-blue-400 mb-3">模型上下文</h2>
+				<div class="bg-gray-100 dark:bg-gray-700 rounded-md p-3">
+					<div class="text-gray-600 dark:text-gray-300 text-sm space-y-2">
 						<p>• 世界观：中世纪奇幻世界，存在魔法和各种种族</p>
 						<p>• 主角：年轻的勇者艾伦，拥有特殊的魔法天赋</p>
 						<p>• 情节：勇者需要收集五颗宝石来拯救世界</p>
