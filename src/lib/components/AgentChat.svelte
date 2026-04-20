@@ -59,20 +59,40 @@
 
 	<!-- 输入区域 -->
 	<div class="border-t border-gray-700 p-4">
-		<div class="flex space-x-2">
-			<textarea
-				bind:value={newMessage}
-				placeholder="输入你的创作想法或问题..."
-				class="flex-1 bg-gray-900 border border-gray-600 rounded-lg p-3 text-gray-200 focus:outline-none focus:border-blue-500"
-				rows={2}
-				onkeydown={handleKeyPress}
-			></textarea>
-			<button
-				onclick={sendMessage}
-				class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-end"
-			>
-				发送
-			</button>
+		<div class="bg-gray-900 rounded-lg p-4">
+			<p class="text-sm text-gray-400 mb-3">帮助你创作小说内容，提供创作灵感和建议，回答写作相关问题。</p>
+			<div class="flex items-center space-x-2">
+				<div class="flex space-x-2">
+					<button class="text-gray-400 hover:text-white p-2 rounded-md">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+						</svg>
+					</button>
+					<button class="text-gray-400 hover:text-white p-2 rounded-md">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+						</svg>
+					</button>
+				</div>
+				<textarea
+					bind:value={newMessage}
+					placeholder="输入你的创作想法或问题..."
+					class="flex-1 bg-transparent text-gray-200 focus:outline-none"
+					rows={1}
+					onkeydown={handleKeyPress}
+				></textarea>
+				<div class="flex items-center space-x-2">
+					<span class="text-sm text-gray-400">SOLO Auto Model</span>
+					<button
+						onclick={sendMessage}
+						class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600 transition-colors"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+						</svg>
+					</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
