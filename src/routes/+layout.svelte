@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import SettingsDropdown from '$lib/components/SettingsDropdown.svelte';
 
 	let { children } = $props();
 	let sidebarOpen = $state(true);
@@ -101,30 +102,22 @@
 				</button>
 
 				{#if userMenuOpen}
-					<div class="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
-						<div class="p-2 space-y-1">
-							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
-								Manage Account
-							</button>
-							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
-								Language
-							</button>
-							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
-								Theme
-							</button>
-							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
-								Settings
-							</button>
-							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
-								Download SOLO Desktop
-							</button>
-							<div class="border-t border-gray-700 my-1"></div>
-							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-red-400 hover:bg-gray-700 transition-colors">
-								Log Out
-							</button>
-						</div>
+				<div class="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+					<div class="p-2 space-y-1">
+						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+							Manage Account
+						</button>
+						<SettingsDropdown />
+						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+							Download SOLO Desktop
+						</button>
+						<div class="border-t border-gray-700 my-1"></div>
+						<button class="w-full text-left px-3 py-2 rounded-md text-sm text-red-400 hover:bg-gray-700 transition-colors">
+							Log Out
+						</button>
 					</div>
-				{/if}
+				</div>
+			{/if}
 			</div>
 		</div>
 	</div>
