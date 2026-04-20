@@ -4,6 +4,7 @@
 
 	let { children } = $props();
 	let sidebarOpen = true;
+	let userMenuOpen = false;
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
@@ -77,6 +78,49 @@
 						<span>web-solo</span>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<!-- 用户信息区域 -->
+		<div class="mt-auto p-4 border-t border-gray-700">
+			<div class="relative">
+				<button onclick={() => userMenuOpen = !userMenuOpen} class="flex items-center space-x-3 w-full text-left py-2">
+					<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+						</svg>
+					</div>
+					<div class="flex-1">
+						<div class="text-sm font-medium text-gray-300">用户21002254381</div>
+						<div class="text-xs text-gray-400">Get Desktop</div>
+					</div>
+				</button>
+
+				{#if userMenuOpen}
+					<div class="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+						<div class="p-2 space-y-1">
+							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+								Manage Account
+							</button>
+							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+								Language
+							</button>
+							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+								Theme
+							</button>
+							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+								Settings
+							</button>
+							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+								Download SOLO Desktop
+							</button>
+							<div class="border-t border-gray-700 my-1"></div>
+							<button class="w-full text-left px-3 py-2 rounded-md text-sm text-red-400 hover:bg-gray-700 transition-colors">
+								Log Out
+							</button>
+						</div>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
