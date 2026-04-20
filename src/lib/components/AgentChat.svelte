@@ -60,7 +60,7 @@
 			<textarea
 				bind:value={newMessage}
 				placeholder="都发发顺丰"
-				class="w-full bg-transparent text-gray-200 focus:outline-none mb-3 py-3 text-left resize-none"
+				class="w-full bg-transparent text-gray-200 focus:outline-none mb-3 py-2 px-0 text-left resize-none align-top"
 				onkeydown={handleKeyPress}
 				rows={2}
 			></textarea>
