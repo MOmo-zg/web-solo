@@ -24,6 +24,7 @@ class DevAutomation {
         steps: [
           { name: "code-generation", enabled: true },
           { name: "code-audit", enabled: true },
+          { name: "ui-audit", enabled: true },
           { name: "testing", enabled: true },
           { name: "docs-update", enabled: true },
           { name: "index-update", enabled: true }
@@ -33,15 +34,28 @@ class DevAutomation {
         source: "src",
         docs: ".trae/documents",
         index: "PROJECT_INDEX.md",
-        status: "DEVELOPMENT_STATUS.md"
+        status: "DEVELOPMENT_STATUS.md",
+        uiRules: ".trae/skills/dev-automation/rules/ui-rules.json"
       },
       rules: {
         "code-quality": { enabled: true, severity: "error" },
         security: { enabled: true, severity: "error" },
-        documentation: { enabled: true, severity: "warning" }
+        documentation: { enabled: true, severity: "warning" },
+        ui: { enabled: true, severity: "warning" }
       },
       ...config
     };
+
+    // 加载UI规则
+    this.uiRules = {};
+    if (fs.existsSync(this.config.paths.uiRules)) {
+      try {
+        const uiRulesContent = fs.readFileSync(this.config.paths.uiRules, 'utf8');
+        this.uiRules = JSON.parse(uiRulesContent);
+      } catch (error) {
+        console.warn(`Failed to load UI rules: ${error.message}`);
+      }
+    }
     
     // 初始化子代理
     this.devAgent = new DevAgent();
