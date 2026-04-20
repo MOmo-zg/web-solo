@@ -22,6 +22,7 @@
 	];
 
 	let newMessage = '';
+	let modelMenuOpen = false;
 
 	function sendMessage() {
 		if (newMessage.trim()) {
@@ -84,7 +85,32 @@
 					</button>
 				</div>
 				<div class="flex items-center space-x-3">
-					<span class="text-sm text-gray-400">SOLO Auto Model</span>
+					<!-- 模型选择下拉列表 -->
+					<div class="relative">
+						<button onclick={() => modelMenuOpen = !modelMenuOpen} class="flex items-center space-x-1 text-sm text-gray-400 hover:text-white cursor-pointer">
+							<span>SOLO Auto Model</span>
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+							</svg>
+						</button>
+						
+						{#if modelMenuOpen}
+							<div class="absolute bottom-full right-0 mb-2 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10 w-48">
+								<div class="p-2 space-y-1">
+									<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+										SOLO Auto Model
+									</button>
+									<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+										SOLO Creative Model
+									</button>
+									<button class="w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+										SOLO Pro Model
+									</button>
+								</div>
+							</div>
+						{/if}
+					</div>
+					
 					<button
 						onclick={sendMessage}
 						class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600 transition-colors"
