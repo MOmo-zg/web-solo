@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SettingsDropdown from '$lib/components/SettingsDropdown.svelte';
+	import AgentChat from '$lib/components/AgentChat.svelte';
 	import { getTranslations } from '$lib/utils/i18n';
 	import { getTheme, applyTheme, setupThemeListener } from '$lib/utils/theme';
 
@@ -79,42 +80,52 @@
 		</a>
 	</div>
 
-	<!-- 项目列表 -->
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-		{#each projects as project}
-			<a href={`/project/${project.id}`} class="bg-gray-800 border border-gray-700 rounded-md hover:border-blue-500 transition-colors p-6 block">
-				<h3 class="text-xl font-bold text-blue-400 mb-2">{project.name}</h3>
-				<div class="flex items-center text-sm text-gray-400 mb-2">
-					<span class="bg-gray-700 px-2 py-1 rounded text-xs font-medium">{project.type}</span>
-					<span class="mx-2">•</span>
-					<div class="flex items-center">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-						</svg>
-						<span>{project.updated_at}</span>
-					</div>
-				</div>
-				<p class="text-gray-400 mb-4">{project.description}</p>
-				<div class="flex justify-end">
-					<span class="text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium">
-						Open Project →
-					</span>
-				</div>
-			</a>
-		{/each}
-	</div>
+	<!-- 主内容区域 -->
+	<div class="flex flex-col lg:flex-row gap-8">
+		<!-- 项目列表 -->
+		<div class="lg:w-1/2">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				{#each projects as project}
+					<a href={`/project/${project.id}`} class="bg-gray-800 border border-gray-700 rounded-md hover:border-blue-500 transition-colors p-6 block">
+						<h3 class="text-xl font-bold text-blue-400 mb-2">{project.name}</h3>
+						<div class="flex items-center text-sm text-gray-400 mb-2">
+							<span class="bg-gray-700 px-2 py-1 rounded text-xs font-medium">{project.type}</span>
+							<span class="mx-2">•</span>
+							<div class="flex items-center">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+								<span>{project.updated_at}</span>
+							</div>
+						</div>
+						<p class="text-gray-400 mb-4">{project.description}</p>
+						<div class="flex justify-end">
+							<span class="text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium">
+								Open Project →
+							</span>
+						</div>
+					</a>
+				{/each}
+			</div>
 
-	<!-- 空状态 -->
-	{#if projects.length === 0}
-		<div class="text-center py-16">
-			<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-			</svg>
-			<h3 class="text-xl font-semibold text-gray-400 mb-2">No Projects Yet</h3>
-			<p class="text-gray-500 mb-6">Click "New Project" to start your creative journey</p>
-			<a href="/create" class="bg-blue-600 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
-				New Project
-			</a>
+			<!-- 空状态 -->
+			{#if projects.length === 0}
+				<div class="text-center py-16">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+					</svg>
+					<h3 class="text-xl font-semibold text-gray-400 mb-2">No Projects Yet</h3>
+					<p class="text-gray-500 mb-6">Click "New Project" to start your creative journey</p>
+					<a href="/create" class="bg-blue-600 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
+						New Project
+					</a>
+				</div>
+			{/if}
 		</div>
-	{/if}
+
+		<!-- Agent聊天对话 -->
+		<div class="lg:w-1/2">
+			<AgentChat />
+		</div>
+	</div>
 </div>
