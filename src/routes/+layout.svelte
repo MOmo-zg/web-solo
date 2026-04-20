@@ -91,9 +91,8 @@
 						</svg>
 					</div>
 					<div class="flex-1">
-						<div class="text-sm font-medium text-gray-300">用户21002254381</div>
-						<div class="text-xs text-gray-400">Get Desktop</div>
-					</div>
+					<div class="text-sm font-medium text-gray-300">用户21002254381</div>
+				</div>
 				</button>
 
 				{#if userMenuOpen}
