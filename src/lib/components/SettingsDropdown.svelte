@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { getTheme, setTheme, Theme } from '../utils/theme';
-	import { getLanguage, setLanguage, Language, getTranslations } from '../utils/i18n';
+	import { getTheme, setTheme } from '../utils/theme';
+	import type { Theme } from '../utils/theme';
+	import { getLanguage, setLanguage, getTranslations } from '../utils/i18n';
+	import type { Language } from '../utils/i18n';
 
 	let isOpen = false;
 	let theme = getTheme();
