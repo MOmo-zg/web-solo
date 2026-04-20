@@ -40,7 +40,7 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex">
 	<!-- 左侧边栏 -->
-	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
+	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen z-40 relative`}>
 		<div class="p-4 flex justify-between items-center">
 			<div class="flex items-center space-x-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
