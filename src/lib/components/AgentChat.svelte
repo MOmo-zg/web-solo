@@ -57,13 +57,13 @@
 	<div class="border-t border-gray-700 p-4">
 		<div class="bg-gray-900 rounded-lg p-3">
 			<!-- 输入框 -->
-			<input
+			<textarea
 				bind:value={newMessage}
 				placeholder="都发发顺丰"
-				class="w-full bg-transparent text-gray-200 focus:outline-none mb-3 py-3 text-left"
+				class="w-full bg-transparent text-gray-200 focus:outline-none mb-3 py-3 text-left resize-none"
 				onkeydown={handleKeyPress}
-				type="text"
-			/>
+				rows={2}
+			></textarea>
 			
 			<!-- 工具栏 -->
 			<div class="flex items-center justify-between">
