@@ -146,10 +146,12 @@
 					<div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
 					
 					<!-- Language -->
-					<div class="relative">
+					<div 
+						class="relative"
+						onmouseenter={() => { languageHoverOpen = true; themeHoverOpen = false; }}
+						onmouseleave={() => languageHoverOpen = false}
+					>
 						<button 
-							onmouseenter={() => { languageHoverOpen = true; themeHoverOpen = false; }}
-							onmouseleave={() => languageHoverOpen = false}
 							class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
 						>
 							<span>Language</span>
@@ -163,11 +165,9 @@
 						
 						{#if languageHoverOpen}
 					<div 
-						onmouseenter={() => languageHoverOpen = true}
-						onmouseleave={() => languageHoverOpen = false}
-						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[150] py-1"
+						class="absolute left-full top-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[150] py-1"
 					>
-						<button onclick={() => changeLanguage('zh')} class={`w-full text-left px-3 py-2 text-sm ${language === 'zh' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+						<button onmousedown={() => changeLanguage('zh')} class={`w-full text-left px-3 py-2 text-sm ${language === 'zh' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
 							<span>{t.chinese}</span>
 							{#if language === 'zh'}
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -175,7 +175,7 @@
 								</svg>
 							{/if}
 						</button>
-						<button onclick={() => changeLanguage('en')} class={`w-full text-left px-3 py-2 text-sm ${language === 'en' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
+						<button onmousedown={() => changeLanguage('en')} class={`w-full text-left px-3 py-2 text-sm ${language === 'en' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
 							<span>{t.english}</span>
 							{#if language === 'en'}
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -188,10 +188,12 @@
 					</div>
 					
 					<!-- Theme -->
-					<div class="relative">
+					<div 
+						class="relative"
+						onmouseenter={() => { themeHoverOpen = true; languageHoverOpen = false; }}
+						onmouseleave={() => themeHoverOpen = false}
+					>
 						<button 
-							onmouseenter={() => { themeHoverOpen = true; languageHoverOpen = false; }}
-							onmouseleave={() => themeHoverOpen = false}
 							class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
 						>
 							<span>Theme</span>
@@ -205,7 +207,7 @@
 						
 						{#if themeHoverOpen}
 					<div 
-						class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[150] py-1"
+						class="absolute left-full top-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[150] py-1"
 					>
 						<button onmousedown={() => changeTheme('light')} class={`w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : 'text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'} transition-colors flex items-center justify-between`}>
 							<span>{t.light}</span>
