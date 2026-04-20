@@ -14,7 +14,7 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <div class="min-h-screen bg-gray-900 text-gray-200 flex">
 	<!-- 左侧边栏 -->
-	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-800 border-r border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-full`}>
+	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-800 border-r border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
 		<div class="p-4 border-b border-gray-700 flex justify-between items-center">
 			<div class="flex items-center space-x-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -125,7 +125,7 @@
 	</div>
 	
 	<!-- 主内容区域 -->
-	<div class="flex-1">
+	<div class="flex-1 h-screen p-4">
 		{@render children()}
 	</div>
 </div>

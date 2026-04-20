@@ -38,7 +38,7 @@
 	}
 </script>
 
-<div class="bg-gray-800 rounded-lg border border-gray-700 h-[600px] flex flex-col">
+<div class="bg-gray-800 rounded-lg border border-gray-700 h-full flex flex-col">
 	<!-- 聊天头部 -->
 	<div class="border-b border-gray-700 p-4">
 		<h2 class="text-lg font-semibold text-blue-400">小说创作助手</h2>
