@@ -333,6 +333,137 @@ function downloadFile(content: string, filename: string, contentType: string) {
 	URL.revokeObjectURL(url);
 }
 
+// 搜索项目
+export function searchProjects(query: string): Project[] {
+	const projects = getProjects();
+	if (!query.trim()) {
+		return projects;
+	}
+	
+	const lowerQuery = query.toLowerCase();
+	return projects.filter(project => 
+		project.name.toLowerCase().includes(lowerQuery) || 
+		project.description.toLowerCase().includes(lowerQuery) ||
+		project.type.toLowerCase().includes(lowerQuery)
+	);
+}
+
+// 筛选项目
+export function filterProjects(
+	filters: {
+		type?: string;
+		sortBy?: 'created_at' | 'updated_at' | 'name';
+		sortOrder?: 'asc' | 'desc';
+	}
+): Project[] {
+	let projects = getProjects();
+	
+	// 根据类型筛选
+	if (filters.type) {
+		projects = projects.filter(project => project.type === filters.type);
+	}
+	
+	// 排序
+	const sortBy = filters.sortBy || 'updated_at';
+	const sortOrder = filters.sortOrder || 'desc';
+	
+	projects.sort((a, b) => {
+		let comparison = 0;
+		
+		if (sortBy === 'name') {
+			comparison = a.name.localeCompare(b.name);
+		} else {
+			const dateA = new Date(a[sortBy]);
+			const dateB = new Date(b[sortBy]);
+			comparison = dateA.getTime() - dateB.getTime();
+		}
+		
+		return sortOrder === 'asc' ? comparison : -comparison;
+	});
+	
+	return projects;
+}
+
+// 获取所有可用的项目类型
+export function getProjectTypes(): string[] {
+	const projects = getProjects();
+	const types = new Set<string>();
+	projects.forEach(project => types.add(project.type));
+	return Array.from(types).sort();
+}
+
+// 导入项目数据
+export function importProject(data: string, format: 'json' | 'markdown'): Project | null {
+	try {
+		if (format === 'json') {
+			const parsed = JSON.parse(data);
+			// 创建新项目
+			const project: Project = {
+				id: Date.now().toString(),
+				name: parsed.name || '导入的项目',
+				type: parsed.type || '其他',
+				description: parsed.description || '',
+				content: parsed.content || '',
+				chapters: parsed.chapters || [],
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
+			};
+			
+			const projects = getProjects();
+			projects.push(project);
+			saveProjects(projects);
+			return project;
+		} else if (format === 'markdown') {
+			// 简单的Markdown解析
+			let name = '导入的项目';
+			let description = '';
+			let content = '';
+			
+			const lines = data.split('\n');
+			let currentSection = '';
+			
+			for (let i = 0; i < lines.length; i++) {
+				const line = lines[i];
+				
+				if (line.startsWith('# ')) {
+					if (!name) {
+						name = line.substring(2);
+					} else {
+						currentSection = line.substring(2);
+					}
+				} else if (currentSection === '项目信息' || currentSection === '项目描述') {
+					description += line + '\n';
+				} else if (currentSection === '内容') {
+					content += line + '\n';
+				} else if (!description && !content) {
+					description += line + '\n';
+				}
+			}
+			
+			const project: Project = {
+				id: Date.now().toString(),
+				name: name,
+				type: '导入',
+				description: description.trim(),
+				content: content.trim(),
+				chapters: [],
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
+			};
+			
+			const projects = getProjects();
+			projects.push(project);
+			saveProjects(projects);
+			return project;
+		}
+	} catch (e) {
+		console.error('导入项目失败:', e);
+		return null;
+	}
+	
+	return null;
+}
+
 // 导出并下载项目
 export function exportAndDownloadProject(projectId: string, format: 'markdown' | 'txt') {
 	const project = getProjectById(projectId);

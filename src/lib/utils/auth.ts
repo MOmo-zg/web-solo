@@ -6,7 +6,17 @@ export interface User {
 	username: string;
 	email: string;
 	avatar?: string;
+	bio?: string;
 	created_at: string;
+	updated_at?: string;
+}
+
+// 用户设置类型
+export interface UserSettings {
+	theme: 'light' | 'dark' | 'system';
+	language: 'zh' | 'en';
+	notifications: boolean;
+	autoSave: boolean;
 }
 
 // 检查是否在浏览器环境中
@@ -83,4 +93,56 @@ export async function register(username: string, email: string, password: string
 // 模拟登出
 export function logout(): void {
 	clearUser();
+}
+
+// 更新用户信息
+export function updateUser(updates: Partial<User>): User | null {
+	const currentUser = getUser();
+	if (currentUser) {
+		const updatedUser: User = {
+			...currentUser,
+			...updates,
+			updated_at: new Date().toISOString()
+		};
+		saveUser(updatedUser);
+		return updatedUser;
+	}
+	return null;
+}
+
+// 保存用户设置
+export function saveUserSettings(settings: UserSettings): void {
+	if (isBrowser()) {
+		localStorage.setItem('userSettings', JSON.stringify(settings));
+	}
+}
+
+// 获取用户设置
+export function getUserSettings(): UserSettings {
+	if (isBrowser()) {
+		const settings = localStorage.getItem('userSettings');
+		if (settings) {
+			return JSON.parse(settings);
+		}
+	}
+	// 默认设置
+	return {
+		theme: 'system',
+		language: 'zh',
+		notifications: true,
+		autoSave: true
+	};
+}
+
+// 更改密码（模拟）
+export async function changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
+	await new Promise(resolve => setTimeout(resolve, 1000));
+	return true;
+}
+
+// 上传头像（模拟）
+export async function uploadAvatar(file: File): Promise<string> {
+	await new Promise(resolve => setTimeout(resolve, 1000));
+	// 模拟返回头像URL
+	return 'https://example.com/avatar.jpg';
 }
