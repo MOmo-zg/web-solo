@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import SettingsDropdown from '$lib/components/SettingsDropdown.svelte';
 	import { getTheme, applyTheme, setupThemeListener } from '$lib/utils/theme';
+	import { getProjectById, type Project } from '$lib/utils/project';
 
 	// 初始化主题
 	applyTheme(getTheme());
@@ -9,13 +10,15 @@
 
 	const projectId = $page.params.id;
 	
-	// 模拟项目数据
-	const project = {
+	// 获取项目数据
+	const project = getProjectById(projectId) || {
 		id: projectId,
-		name: '奇幻冒险小说',
-		type: '奇幻',
-		description: '一个关于勇者拯救世界的故事',
-		content: '很久很久以前，在一个遥远的国度，有一个勇敢的少年...'
+		name: '未知项目',
+		type: '未知类型',
+		description: '项目不存在',
+		content: '',
+		created_at: new Date().toISOString(),
+		updated_at: new Date().toISOString()
 	};
 
 	// 代理配置
@@ -42,7 +45,7 @@
 	let selectedSkills = $state(['1', '2', '3']);
 
 	// 内容生成
-	let generatedContent = $state(project.content);
+	let generatedContent = $state(project.content || '很久很久以前，在一个遥远的国度，有一个勇敢的少年...');
 	let isGenerating = $state(false);
 
 	function addRule() {

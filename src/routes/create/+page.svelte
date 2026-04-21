@@ -2,6 +2,7 @@
 	import { redirect } from '@sveltejs/kit';
 	import SettingsDropdown from '$lib/components/SettingsDropdown.svelte';
 	import { getTheme, applyTheme, setupThemeListener } from '$lib/utils/theme';
+	import { addProject } from '$lib/utils/project';
 
 	// 初始化主题
 	applyTheme(getTheme());
@@ -15,9 +16,14 @@
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
-		// 这里应该调用 API 创建项目
-		// 现在模拟创建成功并跳转到项目编辑页
-		throw redirect(302, '/project/1');
+		// 创建项目
+		const newProject = addProject({
+			name: projectName,
+			type: projectType,
+			description: projectDescription
+		});
+		// 跳转到项目编辑页
+		throw redirect(302, `/project/${newProject.id}`);
 	}
 </script>
 

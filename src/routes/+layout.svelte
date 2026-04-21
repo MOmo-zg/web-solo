@@ -5,6 +5,7 @@
 	import type { Theme } from '$lib/utils/theme';
 	import { getLanguage, setLanguage, getTranslations } from '$lib/utils/i18n';
 	import type { Language } from '$lib/utils/i18n';
+	import { getProjects, type Project } from '$lib/utils/project';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
@@ -17,10 +18,13 @@
 	let theme = $state(getTheme());
 	let language = $state(getLanguage());
 	let t = $state(getTranslations());
+	let projects = $state<Project[]>([]);
 
 	onMount(() => {
 		applyTheme(theme);
 		setupThemeListener();
+		// 加载项目列表
+		projects = getProjects();
 	});
 
 	function toggleSidebar() {
@@ -52,6 +56,11 @@
 	function createNewNovel() {
 		// 跳转到创建项目页面
 		goto('/create');
+	}
+
+	function selectProject(project: Project) {
+		// 跳转到项目编辑页面
+		goto(`/project/${project.id}`);
 	}
 </script>
 
@@ -114,9 +123,33 @@
 						</svg>
 					</button>
 				</div>
-				<!-- 项目列表目前为空，将来会动态加载项目 -->
 				<div class="space-y-1">
-					<!-- 项目列表将在后续开发中添加 -->
+					{#if projects.length === 0}
+						<div class="flex items-center space-x-2 text-gray-400 py-2">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+							<span class="text-sm">暂无项目，点击 + 创建新小说</span>
+						</div>
+					{:else}
+						{#each projects as project}
+							<button 
+								onmousedown={() => selectProject(project)}
+								class="flex items-center space-x-2 text-gray-300 hover:text-white py-2 px-3 w-full text-left transition-colors rounded-md hover:bg-gray-700/30 dark:hover:bg-gray-600/30 duration-200 ease-in-out group"
+							>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+								</svg>
+								<div class="flex-1">
+									<div class="text-sm font-medium transition-all duration-200">{project.name}</div>
+									<div class="text-xs text-gray-400 transition-all duration-200">{project.type}</div>
+								</div>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-white opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+								</svg>
+							</button>
+						{/each}
+					{/if}
 				</div>
 			</div>
 		</div>
