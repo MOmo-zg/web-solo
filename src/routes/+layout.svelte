@@ -68,7 +68,7 @@
 <div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex">
 	<!-- 左侧边栏 -->
 	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-visible flex flex-col h-screen z-40 relative`}>
-		<div class="p-4 flex justify-between items-center">
+		<div class="p-4 flex justify-between items-center shrink-0">
 			<div class="flex items-center space-x-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -82,7 +82,7 @@
 			</button>
 		</div>
 		
-		<div class="p-4 space-y-6">
+		<div class="p-4 space-y-6 flex-1 overflow-y-auto min-h-0">
 			<!-- New Task -->
 			<div>
 				<button class="flex items-center space-x-2 text-gray-300 hover:text-white w-full text-left py-2">
@@ -114,8 +114,8 @@
 			</div>
 			
 			<!-- Project List -->
-			<div>
-				<div class="flex items-center justify-between text-gray-400 mb-2">
+			<div class="min-w-0">
+				<div class="flex items-center justify-between text-gray-400 mb-2 px-1">
 					<span class="text-sm font-medium">Novels</span>
 					<button onmousedown={createNewNovel} class="text-gray-400 hover:text-white" aria-label="Add novel">
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +123,7 @@
 						</svg>
 					</button>
 				</div>
-				<div class="space-y-1">
+				<div class="space-y-1 overflow-y-auto">
 					{#if projects.length === 0}
 						<div class="flex items-center space-x-2 text-gray-400 py-2">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -140,9 +140,9 @@
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
 								</svg>
-								<div class="flex-1">
-									<div class="text-sm font-medium transition-all duration-200">{project.name}</div>
-									<div class="text-xs text-gray-400 transition-all duration-200">{project.type}</div>
+								<div class="flex-1 min-w-0">
+									<div class="text-sm font-medium transition-all duration-200 truncate">{project.name}</div>
+									<div class="text-xs text-gray-400 transition-all duration-200 truncate">{project.type}</div>
 								</div>
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-white opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
