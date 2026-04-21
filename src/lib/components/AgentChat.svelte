@@ -70,49 +70,58 @@
 			messages = [...messages, userMessage];
 			newMessage = '';
 
-			// 模拟AI回复
+			// 调用 AI 回复
 			isLoading = true;
-			await simulateAIResponse(userMessage.content);
+			await getAIResponse(userMessage.content);
 			isLoading = false;
 		}
 	}
 
-	// 模拟AI回复
-	async function simulateAIResponse(userInput: string) {
-		// 模拟网络延迟
-		await new Promise(resolve => setTimeout(resolve, 1500));
+	// 调用后端 API 获取 AI 回复
+	async function getAIResponse(userInput: string) {
+		try {
+			// 调用后端 API
+			const response = await fetch('http://localhost:3001/api/ai/generate-content', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					prompt: userInput,
+					options: {
+						model: 'gpt-3.5-turbo',
+						temperature: 0.7,
+						maxTokens: 500
+					}
+				})
+			});
 
-		// 简单的回复逻辑
-		let responseContent = '';
+			if (!response.ok) {
+				throw new Error('API 请求失败');
+			}
 
-		if (userInput.includes('奇幻') || userInput.includes('勇者') || userInput.includes('世界')) {
-			responseContent = '这是一个很棒的主题！让我帮你构思一下：\n\n1. 世界观：中世纪奇幻世界，存在魔法和各种种族\n2. 主角：年轻的勇者，拥有特殊的魔法天赋\n3. 情节：勇者需要收集五颗宝石来拯救世界\n4. 反派：邪恶的黑龙，想要毁灭世界\n\n你觉得这个设定怎么样？';
-		} else if (userInput.includes('科幻') || userInput.includes('未来')) {
-			responseContent = '科幻题材很有潜力！考虑以下设定：\n\n1. 世界观：2150年的未来世界，人类已经殖民火星\n2. 主角：年轻的科学家，发现了一个神秘的外星信号\n3. 情节：主角必须解开信号的秘密，拯救人类文明\n4. 反派：一个试图控制信号的邪恶组织\n\n你想深入探索哪个方面？';
-		} else if (userInput.includes('帮助') || userInput.includes('怎么写')) {
-			responseContent = '写作技巧建议：\n\n1. 设定清晰的世界观和人物动机\n2. 创造有冲突的情节\n3. 注重细节描写，让读者有代入感\n4. 保持情节的连贯性和逻辑性\n5. 定期修改和完善你的作品\n\n你需要具体哪方面的帮助？';
-		} else if (userInput.includes('爱情') || userInput.includes('感情')) {
-			responseContent = '爱情故事是永恒的主题！考虑以下元素：\n\n1. 角色设定：性格互补的男女主角\n2. 相遇场景：独特而自然的初次相遇\n3. 冲突：来自外界或内心的阻碍\n4. 发展：情感的递进和变化\n5. 结局：符合故事基调的收尾\n\n你想写什么样的爱情故事？';
-		} else if (userInput.includes('恐怖') || userInput.includes('悬疑')) {
-			responseContent = '恐怖悬疑题材需要营造紧张氛围：\n\n1. 场景设定：封闭或孤立的环境\n2. 谜团：逐步揭示的秘密\n3. 氛围：通过细节描写制造紧张感\n4. 转折：出人意料的情节发展\n5. 结局：合理且令人回味的解答\n\n你想探索什么类型的恐怖悬疑故事？';
-		} else if (userInput.includes('历史') || userInput.includes('古代')) {
-			responseContent = '历史题材需要真实感和想象力的结合：\n\n1. 时代背景：详细的历史时期设定\n2. 人物：真实或虚构的历史人物\n3. 事件：基于历史事件的改编或创造\n4. 细节：符合时代特征的生活描写\n5. 主题：通过历史反映现实\n\n你对哪个历史时期感兴趣？';
-		} else if (userInput.includes('开头') || userInput.includes('开始')) {
-			responseContent = '一个好的开头能吸引读者：\n\n1. 引人入胜的场景描写\n2. 神秘的事件或问题\n3. 主角的独特之处\n4. 暗示故事的核心冲突\n5. 营造适合故事基调的氛围\n\n你希望开头呈现什么样的效果？';
-		} else if (userInput.includes('结尾') || userInput.includes('结局')) {
-			responseContent = '一个好的结尾能让读者回味无穷：\n\n1. 解决主要冲突\n2. 角色的成长或变化\n3. 留给读者思考的空间\n4. 呼应开头的元素\n5. 符合故事整体风格\n\n你希望结局是圆满的还是开放式的？';
-		} else {
-			responseContent = '谢谢你的分享！我很喜欢这个想法。你可以告诉我更多关于你的故事设定，比如世界观、人物或者情节，我会给你提供更具体的建议。';
+			const data = await response.json();
+			const responseContent = data.content || '抱歉，我无法生成内容。请稍后再试。';
+
+			// 添加AI回复
+			const aiMessage: Message = {
+				id: (Date.now() + 1).toString(),
+				sender: 'agent',
+				content: responseContent,
+				time: getCurrentTime()
+			};
+			messages = [...messages, aiMessage];
+		} catch (error) {
+			console.error('获取 AI 回复失败:', error);
+			// 添加错误回复
+			const errorMessage: Message = {
+				id: (Date.now() + 1).toString(),
+				sender: 'agent',
+				content: '抱歉，我暂时无法响应。请稍后再试。',
+				time: getCurrentTime()
+			};
+			messages = [...messages, errorMessage];
 		}
-
-		// 添加AI回复
-		const aiMessage: Message = {
-			id: (Date.now() + 1).toString(),
-			sender: 'agent',
-			content: responseContent,
-			time: getCurrentTime()
-		};
-		messages = [...messages, aiMessage];
 	}
 
 	function handleKeyPress(e: KeyboardEvent) {
