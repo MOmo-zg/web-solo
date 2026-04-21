@@ -10,6 +10,7 @@
 		type Project 
 	} from '$lib/utils/project';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	let searchQuery = $state('');
 	let filterType = $state('');
@@ -20,41 +21,52 @@
 	let importFormat = $state<'json' | 'markdown'>('json');
 	let importContent = $state('');
 	let importSuccess = $state(false);
+	let isLoading = $state(false);
 	
 	let allProjectTypes = $state<string[]>([]);
+	let projects = $state<Project[]>([]);
+	let filteredProjects = $state<Project[]>([]);
 	
-	$effect(() => {
-		allProjectTypes = getProjectTypes();
+	// 加载项目类型
+	onMount(async () => {
+		allProjectTypes = await getProjectTypes();
+		await loadProjects();
 	});
 	
-	let filteredProjects = $derived(() => {
-		let projects: Project[];
-		
-		if (searchQuery) {
-			projects = searchProjects(searchQuery);
-		} else {
-			projects = getProjects();
+	// 加载项目列表
+	async function loadProjects() {
+		isLoading = true;
+		try {
+			projects = await getProjects();
+			await applyFilters();
+		} finally {
+			isLoading = false;
 		}
-		
-		if (filterType) {
-			projects = projects.filter(p => p.type === filterType);
-		}
-		
-		projects.sort((a, b) => {
-			let comparison = 0;
-			
-			if (sortBy === 'name') {
-				comparison = a.name.localeCompare(b.name);
+	}
+	
+	// 应用筛选
+	async function applyFilters() {
+		isLoading = true;
+		try {
+			if (searchQuery) {
+				filteredProjects = await searchProjects(searchQuery);
+			} else if (filterType || sortBy || sortOrder) {
+				filteredProjects = await filterProjects({
+					type: filterType,
+					sortBy,
+					sortOrder
+				});
 			} else {
-				const dateA = new Date(a[sortBy]);
-				const dateB = new Date(b[sortBy]);
-				comparison = dateA.getTime() - dateB.getTime();
+				filteredProjects = projects;
 			}
-			
-			return sortOrder === 'asc' ? comparison : -comparison;
-		});
-		
-		return projects;
+		} finally {
+			isLoading = false;
+		}
+	}
+	
+	// 当筛选条件变化时重新加载项目
+	$effect(() => {
+		applyFilters();
 	});
 	
 	function goToProject(project: Project) {
@@ -73,10 +85,18 @@
 		deleteProjectId = null;
 	}
 	
-	function executeDeleteProject() {
+	async function executeDeleteProject() {
 		if (deleteProjectId) {
-			deleteProject(deleteProjectId);
-			deleteProjectId = null;
+			isLoading = true;
+			try {
+				const success = await deleteProject(deleteProjectId);
+				if (success) {
+					await loadProjects();
+				}
+			} finally {
+				deleteProjectId = null;
+				isLoading = false;
+			}
 		}
 	}
 	
@@ -106,16 +126,22 @@
 		}
 	}
 	
-	function handleImport() {
+	async function handleImport() {
 		if (importContent) {
-			const project = importProject(importContent, importFormat);
-			if (project) {
-				importSuccess = true;
-				setTimeout(() => {
-					importSuccess = false;
-					showImportDialog = false;
-					importContent = '';
-				}, 1500);
+			isLoading = true;
+			try {
+				const project = await importProject(importContent, importFormat);
+				if (project) {
+					importSuccess = true;
+					await loadProjects();
+					setTimeout(() => {
+						importSuccess = false;
+						showImportDialog = false;
+						importContent = '';
+					}, 1500);
+				}
+			} finally {
+				isLoading = false;
 			}
 		}
 	}
@@ -246,88 +272,99 @@
 
 	<!-- 项目数量信息 -->
 	<div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-		显示 {filteredProjects().length} 个项目，共 {getProjects().length} 个
+		显示 {filteredProjects.length} 个项目，共 {projects.length} 个
 	</div>
 
-	<!-- 项目网格 -->
-	{#if filteredProjects().length === 0}
-		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
-			<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-			</svg>
-			<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-				{searchQuery || filterType ? '没有找到匹配的项目' : '还没有项目'}
-			</h3>
-			<p class="text-gray-500 dark:text-gray-400 mb-4">
-				{searchQuery || filterType ? '尝试调整搜索条件或筛选类型' : '点击上方按钮创建你的第一个小说项目'}
-			</p>
-			{#if !searchQuery && !filterType}
-				<button 
-					onclick={goToCreateProject} 
-					class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
-				>
-					创建项目
-				</button>
-			{/if}
+	<!-- 加载状态 -->
+	{#if isLoading}
+		<div class="flex justify-center items-center py-12">
+			<div class="flex space-x-2">
+				<div class="w-4 h-4 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+				<div class="w-4 h-4 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+				<div class="w-4 h-4 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+			</div>
 		</div>
 	{:else}
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{#each filteredProjects() as project}
-				<div 
-					class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden group"
-				>
-					<div class="p-6">
-						<div class="flex justify-between items-start mb-4">
-							<div>
-								<span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-									{project.type}
-								</span>
+		<!-- 项目网格 -->
+		{#if filteredProjects.length === 0}
+			<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+				</svg>
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+					{searchQuery || filterType ? '没有找到匹配的项目' : '还没有项目'}
+				</h3>
+				<p class="text-gray-500 dark:text-gray-400 mb-4">
+					{searchQuery || filterType ? '尝试调整搜索条件或筛选类型' : '点击上方按钮创建你的第一个小说项目'}
+				</p>
+				{#if !searchQuery && !filterType}
+					<button 
+						onclick={goToCreateProject} 
+						class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+					>
+						创建项目
+					</button>
+				{/if}
+			</div>
+		{:else}
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				{#each filteredProjects as project}
+					<div 
+						class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden group"
+					>
+						<div class="p-6">
+							<div class="flex justify-between items-start mb-4">
+								<div>
+									<span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+										{project.type}
+									</span>
+								</div>
+								<div class="opacity-0 group-hover:opacity-100 transition-opacity">
+									<button 
+										onclick={(e) => { e.stopPropagation(); confirmDeleteProject(project.id); }} 
+										class="p-1 text-gray-400 hover:text-red-500 transition-colors"
+										aria-label="删除项目"
+									>
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+										</svg>
+									</button>
+								</div>
 							</div>
-							<div class="opacity-0 group-hover:opacity-100 transition-opacity">
-								<button 
-									onclick={(e) => { e.stopPropagation(); confirmDeleteProject(project.id); }} 
-									class="p-1 text-gray-400 hover:text-red-500 transition-colors"
-									aria-label="删除项目"
-								>
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-									</svg>
-								</button>
+							
+							<button 
+								onclick={() => goToProject(project)}
+								class="text-xl font-semibold text-gray-800 dark:text-white mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full"
+							>
+								{project.name}
+							</button>
+							
+							<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+								{project.description}
+							</p>
+							
+							<div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-500">
+								<div>
+									<span>创建: {new Date(project.created_at).toLocaleDateString('zh-CN')}</span>
+								</div>
+								<div>
+									<span>更新: {new Date(project.updated_at).toLocaleDateString('zh-CN')}</span>
+								</div>
 							</div>
 						</div>
 						
-						<button 
-							onclick={() => goToProject(project)}
-							class="text-xl font-semibold text-gray-800 dark:text-white mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full"
-						>
-							{project.name}
-						</button>
-						
-						<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-							{project.description}
-						</p>
-						
-						<div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-500">
-							<div>
-								<span>创建: {new Date(project.created_at).toLocaleDateString('zh-CN')}</span>
-							</div>
-							<div>
-								<span>更新: {new Date(project.updated_at).toLocaleDateString('zh-CN')}</span>
-							</div>
+						<div class="bg-gray-50 dark:bg-gray-700 px-6 py-3">
+							<button 
+								onclick={() => goToProject(project)} 
+								class="w-full text-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+							>
+								查看项目 →
+							</button>
 						</div>
 					</div>
-					
-					<div class="bg-gray-50 dark:bg-gray-700 px-6 py-3">
-						<button 
-							onclick={() => goToProject(project)} 
-							class="w-full text-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-						>
-							查看项目 →
-						</button>
-					</div>
-				</div>
-			{/each}
-		</div>
+				{/each}
+			</div>
+		{/if}
 	{/if}
 </div>
 

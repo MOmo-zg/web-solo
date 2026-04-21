@@ -27,244 +27,217 @@ function isBrowser() {
 	return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 }
 
-// 从本地存储获取项目列表
-export function getProjects(): Project[] {
+// 从本地存储获取 token
+function getToken(): string | null {
 	if (isBrowser()) {
-		const projects = localStorage.getItem('projects');
-		if (projects) {
-			return JSON.parse(projects);
-		}
-		// 如果没有项目，返回一些模拟数据
-		return getMockProjects();
+		return localStorage.getItem('token');
 	}
-	return [];
+	return null;
 }
 
-// 保存项目列表到本地存储
-export function saveProjects(projects: Project[]): void {
-	if (isBrowser()) {
-		localStorage.setItem('projects', JSON.stringify(projects));
+// 构建请求头
+function getHeaders(): HeadersInit {
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json'
+	};
+	const token = getToken();
+	if (token) {
+		headers['Authorization'] = `Bearer ${token}`;
 	}
+	return headers;
 }
 
-// 获取模拟项目数据
-function getMockProjects(): Project[] {
-	return [
-		{
-			id: '1',
-			name: '奇幻冒险小说',
-			type: '奇幻',
-			description: '一个关于勇者拯救世界的故事',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: '2',
-			name: '未来科幻小说',
-			type: '科幻',
-			description: '2150年的未来世界',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: '3',
-			name: '现代都市小说',
-			type: '现代',
-			description: '都市生活的故事',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: '4',
-			name: '武侠江湖传说',
-			type: '武侠',
-			description: '武林中的英雄故事',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: '5',
-			name: '历史王朝风云',
-			type: '历史',
-			description: '古代王朝的兴衰',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: '6',
-			name: '浪漫爱情故事',
-			type: '爱情',
-			description: '甜蜜的恋爱故事',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: '7',
-			name: '悬疑推理小说',
-			type: '悬疑',
-			description: '解开神秘案件的真相',
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
+// 获取项目列表
+export async function getProjects(): Promise<Project[]> {
+	try {
+		const response = await fetch('http://localhost:3001/api/projects', {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			throw new Error('获取项目列表失败');
 		}
-	];
+
+		const data = await response.json();
+		return data.projects || [];
+	} catch (error) {
+		console.error('获取项目列表失败:', error);
+		// 失败时返回空数组
+		return [];
+	}
 }
 
 // 添加新项目
-export function addProject(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>): Project {
-	const newProject: Project = {
-		...project,
-		id: Date.now().toString(),
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-	const projects = getProjects();
-	projects.push(newProject);
-	saveProjects(projects);
-	return newProject;
+export async function addProject(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>): Promise<Project | null> {
+	try {
+		const response = await fetch('http://localhost:3001/api/projects', {
+			method: 'POST',
+			headers: getHeaders(),
+			body: JSON.stringify(project)
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '创建项目失败');
+		}
+
+		const data = await response.json();
+		return data.project || null;
+	} catch (error) {
+		console.error('创建项目失败:', error);
+		return null;
+	}
 }
 
 // 更新项目
-export function updateProject(id: string, updates: Partial<Omit<Project, 'id' | 'created_at'>>): Project | null {
-	const projects = getProjects();
-	const index = projects.findIndex(p => p.id === id);
-	if (index === -1) {
+export async function updateProject(id: string, updates: Partial<Omit<Project, 'id' | 'created_at'>>): Promise<Project | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${id}`, {
+			method: 'PUT',
+			headers: getHeaders(),
+			body: JSON.stringify(updates)
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '更新项目失败');
+		}
+
+		const data = await response.json();
+		return data.project || null;
+	} catch (error) {
+		console.error('更新项目失败:', error);
 		return null;
 	}
-	projects[index] = {
-		...projects[index],
-		...updates,
-		updated_at: new Date().toISOString()
-	};
-	saveProjects(projects);
-	return projects[index];
 }
 
 // 删除项目
-export function deleteProject(id: string): boolean {
-	const projects = getProjects();
-	const filteredProjects = projects.filter(p => p.id !== id);
-	if (filteredProjects.length === projects.length) {
-		return false; // 没有找到项目
+export async function deleteProject(id: string): Promise<boolean> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${id}`, {
+			method: 'DELETE',
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '删除项目失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('删除项目失败:', error);
+		return false;
 	}
-	saveProjects(filteredProjects);
-	return true;
 }
 
 // 获取单个项目
-export function getProjectById(id: string): Project | null {
-	const projects = getProjects();
-	return projects.find(p => p.id === id) || null;
-}
+export async function getProjectById(id: string): Promise<Project | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${id}`, {
+			headers: getHeaders()
+		});
 
-// 添加章节
-export function addChapter(projectId: string, chapter: Omit<Chapter, 'id' | 'order' | 'created_at' | 'updated_at'>): Chapter | null {
-	const projects = getProjects();
-	const projectIndex = projects.findIndex(p => p.id === projectId);
-	if (projectIndex === -1) {
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '获取项目失败');
+		}
+
+		const data = await response.json();
+		return data.project || null;
+	} catch (error) {
+		console.error('获取项目失败:', error);
 		return null;
 	}
 
-	const project = projects[projectIndex];
-	const chapters = project.chapters || [];
-	const newChapter: Chapter = {
-		...chapter,
-		id: Date.now().toString(),
-		order: chapters.length,
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
+// 添加章节
+export async function addChapter(projectId: string, chapter: Omit<Chapter, 'id' | 'order' | 'created_at' | 'updated_at'>): Promise<Chapter | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/chapters`, {
+			method: 'POST',
+			headers: getHeaders(),
+			body: JSON.stringify(chapter)
+		});
 
-	chapters.push(newChapter);
-	project.chapters = chapters;
-	project.updated_at = new Date().toISOString();
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '添加章节失败');
+		}
 
-	saveProjects(projects);
-	return newChapter;
+		const data = await response.json();
+		return data.chapter || null;
+	} catch (error) {
+		console.error('添加章节失败:', error);
+		return null;
+	}
 }
 
 // 更新章节
-export function updateChapter(projectId: string, chapterId: string, updates: Partial<Omit<Chapter, 'id' | 'order' | 'created_at'>>): Chapter | null {
-	const projects = getProjects();
-	const projectIndex = projects.findIndex(p => p.id === projectId);
-	if (projectIndex === -1) {
+export async function updateChapter(projectId: string, chapterId: string, updates: Partial<Omit<Chapter, 'id' | 'order' | 'created_at'>>): Promise<Chapter | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/chapters/${chapterId}`, {
+			method: 'PUT',
+			headers: getHeaders(),
+			body: JSON.stringify(updates)
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '更新章节失败');
+		}
+
+		const data = await response.json();
+		return data.chapter || null;
+	} catch (error) {
+		console.error('更新章节失败:', error);
 		return null;
 	}
-
-	const project = projects[projectIndex];
-	const chapters = project.chapters || [];
-	const chapterIndex = chapters.findIndex(c => c.id === chapterId);
-	if (chapterIndex === -1) {
-		return null;
-	}
-
-	chapters[chapterIndex] = {
-		...chapters[chapterIndex],
-		...updates,
-		updated_at: new Date().toISOString()
-	};
-
-	project.updated_at = new Date().toISOString();
-	saveProjects(projects);
-	return chapters[chapterIndex];
 }
 
 // 删除章节
-export function deleteChapter(projectId: string, chapterId: string): boolean {
-	const projects = getProjects();
-	const projectIndex = projects.findIndex(p => p.id === projectId);
-	if (projectIndex === -1) {
+export async function deleteChapter(projectId: string, chapterId: string): Promise<boolean> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/chapters/${chapterId}`, {
+			method: 'DELETE',
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '删除章节失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('删除章节失败:', error);
 		return false;
 	}
-
-	const project = projects[projectIndex];
-	const chapters = project.chapters || [];
-	const filteredChapters = chapters.filter(c => c.id !== chapterId);
-
-	if (filteredChapters.length === chapters.length) {
-		return false;
-	}
-
-	// 重新排序章节
-	filteredChapters.forEach((chapter, index) => {
-		chapter.order = index;
-	});
-
-	project.chapters = filteredChapters;
-	project.updated_at = new Date().toISOString();
-	saveProjects(projects);
-	return true;
 }
 
 // 重新排序章节
-export function reorderChapters(projectId: string, chapterIds: string[]): boolean {
-	const projects = getProjects();
-	const projectIndex = projects.findIndex(p => p.id === projectId);
-	if (projectIndex === -1) {
+export async function reorderChapters(projectId: string, chapterIds: string[]): Promise<boolean> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/chapters/reorder`, {
+			method: 'POST',
+			headers: getHeaders(),
+			body: JSON.stringify({ chapterIds })
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '重新排序章节失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('重新排序章节失败:', error);
 		return false;
 	}
-
-	const project = projects[projectIndex];
-	const chapters = project.chapters || [];
-
-	// 按照新的顺序更新章节顺序
-	chapterIds.forEach((chapterId, index) => {
-		const chapter = chapters.find(c => c.id === chapterId);
-		if (chapter) {
-			chapter.order = index;
-			chapter.updated_at = new Date().toISOString();
-		}
-	});
-
-	// 按照新的顺序排序章节
-	project.chapters = chapters.sort((a, b) => a.order - b.order);
-	project.updated_at = new Date().toISOString();
-	saveProjects(projects);
-	return true;
 }
 
 // 导出项目为Markdown
-export function exportProjectAsMarkdown(projectId: string): string {
-	const project = getProjectById(projectId);
+export async function exportProjectAsMarkdown(projectId: string): Promise<string> {
+	const project = await getProjectById(projectId);
 	if (!project) {
 		return '';
 	}
@@ -292,8 +265,8 @@ export function exportProjectAsMarkdown(projectId: string): string {
 }
 
 // 导出项目为TXT
-export function exportProjectAsTxt(projectId: string): string {
-	const project = getProjectById(projectId);
+export async function exportProjectAsTxt(projectId: string): Promise<string> {
+	const project = await getProjectById(projectId);
 	if (!project) {
 		return '';
 	}
@@ -334,85 +307,95 @@ function downloadFile(content: string, filename: string, contentType: string) {
 }
 
 // 搜索项目
-export function searchProjects(query: string): Project[] {
-	const projects = getProjects();
-	if (!query.trim()) {
-		return projects;
+export async function searchProjects(query: string): Promise<Project[]> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects?search=${encodeURIComponent(query)}`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			throw new Error('搜索项目失败');
+		}
+
+		const data = await response.json();
+		return data.projects || [];
+	} catch (error) {
+		console.error('搜索项目失败:', error);
+		return [];
 	}
-	
-	const lowerQuery = query.toLowerCase();
-	return projects.filter(project => 
-		project.name.toLowerCase().includes(lowerQuery) || 
-		project.description.toLowerCase().includes(lowerQuery) ||
-		project.type.toLowerCase().includes(lowerQuery)
-	);
 }
 
 // 筛选项目
-export function filterProjects(
+export async function filterProjects(
 	filters: {
 		type?: string;
 		sortBy?: 'created_at' | 'updated_at' | 'name';
 		sortOrder?: 'asc' | 'desc';
 	}
-): Project[] {
-	let projects = getProjects();
-	
-	// 根据类型筛选
-	if (filters.type) {
-		projects = projects.filter(project => project.type === filters.type);
-	}
-	
-	// 排序
-	const sortBy = filters.sortBy || 'updated_at';
-	const sortOrder = filters.sortOrder || 'desc';
-	
-	projects.sort((a, b) => {
-		let comparison = 0;
-		
-		if (sortBy === 'name') {
-			comparison = a.name.localeCompare(b.name);
-		} else {
-			const dateA = new Date(a[sortBy]);
-			const dateB = new Date(b[sortBy]);
-			comparison = dateA.getTime() - dateB.getTime();
+): Promise<Project[]> {
+	try {
+		let url = 'http://localhost:3001/api/projects';
+		const params = new URLSearchParams();
+
+		if (filters.type) {
+			params.append('type', filters.type);
 		}
-		
-		return sortOrder === 'asc' ? comparison : -comparison;
-	});
-	
-	return projects;
+
+		if (filters.sortBy) {
+			params.append('sortBy', filters.sortBy);
+		}
+
+		if (filters.sortOrder) {
+			params.append('sortOrder', filters.sortOrder);
+		}
+
+		if (params.toString()) {
+			url += `?${params.toString()}`;
+		}
+
+		const response = await fetch(url, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			throw new Error('筛选项目失败');
+		}
+
+		const data = await response.json();
+		return data.projects || [];
+	} catch (error) {
+		console.error('筛选项目失败:', error);
+		return [];
+	}
 }
 
 // 获取所有可用的项目类型
-export function getProjectTypes(): string[] {
-	const projects = getProjects();
-	const types = new Set<string>();
-	projects.forEach(project => types.add(project.type));
-	return Array.from(types).sort();
+export async function getProjectTypes(): Promise<string[]> {
+	try {
+		const projects = await getProjects();
+		const types = new Set<string>();
+		projects.forEach(project => types.add(project.type));
+		return Array.from(types).sort();
+	} catch (error) {
+		console.error('获取项目类型失败:', error);
+		return [];
+	}
 }
 
 // 导入项目数据
-export function importProject(data: string, format: 'json' | 'markdown'): Project | null {
+export async function importProject(data: string, format: 'json' | 'markdown'): Promise<Project | null> {
 	try {
 		if (format === 'json') {
 			const parsed = JSON.parse(data);
 			// 创建新项目
-			const project: Project = {
-				id: Date.now().toString(),
+			const projectData = {
 				name: parsed.name || '导入的项目',
 				type: parsed.type || '其他',
 				description: parsed.description || '',
-				content: parsed.content || '',
-				chapters: parsed.chapters || [],
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
+				content: parsed.content || ''
 			};
 			
-			const projects = getProjects();
-			projects.push(project);
-			saveProjects(projects);
-			return project;
+			return await addProject(projectData);
 		} else if (format === 'markdown') {
 			// 简单的Markdown解析
 			let name = '导入的项目';
@@ -440,21 +423,14 @@ export function importProject(data: string, format: 'json' | 'markdown'): Projec
 				}
 			}
 			
-			const project: Project = {
-				id: Date.now().toString(),
+			const projectData = {
 				name: name,
 				type: '导入',
 				description: description.trim(),
-				content: content.trim(),
-				chapters: [],
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
+				content: content.trim()
 			};
 			
-			const projects = getProjects();
-			projects.push(project);
-			saveProjects(projects);
-			return project;
+			return await addProject(projectData);
 		}
 	} catch (e) {
 		console.error('导入项目失败:', e);
@@ -465,8 +441,8 @@ export function importProject(data: string, format: 'json' | 'markdown'): Projec
 }
 
 // 导出并下载项目
-export function exportAndDownloadProject(projectId: string, format: 'markdown' | 'txt') {
-	const project = getProjectById(projectId);
+export async function exportAndDownloadProject(projectId: string, format: 'markdown' | 'txt') {
+	const project = await getProjectById(projectId);
 	if (!project) {
 		return false;
 	}
@@ -476,11 +452,11 @@ export function exportAndDownloadProject(projectId: string, format: 'markdown' |
 	let contentType: string;
 
 	if (format === 'markdown') {
-		content = exportProjectAsMarkdown(projectId);
+		content = await exportProjectAsMarkdown(projectId);
 		filename = `${project.name}.md`;
 		contentType = 'text/markdown';
 	} else {
-		content = exportProjectAsTxt(projectId);
+		content = await exportProjectAsTxt(projectId);
 		filename = `${project.name}.txt`;
 		contentType = 'text/plain';
 	}
