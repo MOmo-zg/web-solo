@@ -50,6 +50,13 @@
 	// 当消息变化时保存到本地存储
 	$effect(() => {
 		saveMessages(messages);
+		// 滚动到最新消息
+		scrollToBottom();
+	});
+
+	// 组件挂载时滚动到最新消息
+	onMount(() => {
+		scrollToBottom();
 	});
 
 	// 获取当前时间
@@ -70,11 +77,27 @@
 			messages = [...messages, userMessage];
 			newMessage = '';
 
+			// 滚动到最新消息
+			scrollToBottom();
+
 			// 调用 AI 回复
 			isLoading = true;
 			await getAIResponse(userMessage.content);
 			isLoading = false;
+
+			// 滚动到最新消息
+			scrollToBottom();
 		}
+	}
+
+	// 滚动到最新消息
+	function scrollToBottom() {
+		setTimeout(() => {
+			const chatContainer = document.querySelector('.flex-1.overflow-y-auto');
+			if (chatContainer) {
+				chatContainer.scrollTop = chatContainer.scrollHeight;
+			}
+		}, 100);
 	}
 
 	// 调用后端 API 获取 AI 回复
