@@ -5,8 +5,9 @@
 	const projectId = $page.params.id;
 	
 	// 获取项目数据
-	const project = getProjectById(projectId) || {
-		id: projectId,
+	const safeProjectId = projectId || 'default';
+	const project = getProjectById(safeProjectId) || {
+		id: safeProjectId,
 		name: '未知项目',
 		type: '未知类型',
 		description: '项目不存在',
@@ -27,12 +28,12 @@
 		isSaving = true;
 		try {
 			// 更新项目信息
-			updateProject(projectId, {
-				name: projectName,
-				type: projectType,
-				description: projectDescription,
-				content: projectContent
-			});
+					updateProject(safeProjectId, {
+						name: projectName,
+						type: projectType,
+						description: projectDescription,
+						content: projectContent
+					});
 			// 显示保存成功提示
 			setTimeout(() => {
 				isSaving = false;
@@ -168,8 +169,9 @@
 		<h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">项目信息</h2>
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 			<div>
-				<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">项目名称</label>
+				<label for="projectName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">项目名称</label>
 				<input 
+					id="projectName"
 					type="text" 
 					bind:value={projectName} 
 					class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 focus:scale-101"
@@ -177,8 +179,9 @@
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">项目类型</label>
+				<label for="projectType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">项目类型</label>
 				<select 
+					id="projectType"
 					bind:value={projectType} 
 					class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 focus:scale-101"
 				>
@@ -192,8 +195,9 @@
 				</select>
 			</div>
 			<div class="md:col-span-2">
-				<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">项目描述</label>
+				<label for="projectDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">项目描述</label>
 				<textarea 
+					id="projectDescription"
 					bind:value={projectDescription} 
 					rows={3} 
 					class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 focus:scale-101"

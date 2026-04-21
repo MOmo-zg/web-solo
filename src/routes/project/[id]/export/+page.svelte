@@ -3,8 +3,9 @@
 	import { getProjectById, exportAndDownloadProject } from '$lib/utils/project';
 
 	const projectId = $page.params.id;
-	const project = getProjectById(projectId) || {
-		id: projectId,
+	const safeProjectId = projectId || 'default';
+	const project = getProjectById(safeProjectId) || {
+		id: safeProjectId,
 		name: '未知项目',
 		type: '未知类型',
 		description: '项目不存在'
@@ -22,7 +23,7 @@
 		try {
 			// 模拟导出过程
 			await new Promise(resolve => setTimeout(resolve, 500));
-			exportAndDownloadProject(projectId, exportFormat);
+				exportAndDownloadProject(safeProjectId, exportFormat);
 		} catch (error) {
 			alert('导出失败，请重试');
 		} finally {

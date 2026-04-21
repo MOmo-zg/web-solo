@@ -3,8 +3,9 @@
 	import { getProjectById, addChapter, updateChapter, deleteChapter, reorderChapters, type Chapter } from '$lib/utils/project';
 
 	const projectId = $page.params.id;
-	const project = getProjectById(projectId) || {
-		id: projectId,
+	const safeProjectId = projectId || 'default';
+	const project = getProjectById(safeProjectId) || {
+		id: safeProjectId,
 		name: '未知项目',
 		chapters: []
 	};
@@ -22,7 +23,7 @@
 
 	// 刷新章节列表
 	function refreshChapters() {
-		const updatedProject = getProjectById(projectId);
+		const updatedProject = getProjectById(safeProjectId);
 		if (updatedProject) {
 			chapters = updatedProject.chapters || [];
 		}
@@ -43,10 +44,10 @@
 	// 添加章节
 	function handleAddChapter() {
 		if (newChapterTitle.trim()) {
-			addChapter(projectId, {
-				title: newChapterTitle.trim(),
-				content: newChapterContent
-			});
+				addChapter(safeProjectId, {
+					title: newChapterTitle.trim(),
+					content: newChapterContent.trim()
+				});
 			refreshChapters();
 			closeAddChapterForm();
 		}
@@ -67,10 +68,10 @@
 	// 保存章节编辑
 	function handleSaveChapter() {
 		if (editingChapter && editTitle.trim()) {
-			updateChapter(projectId, editingChapter.id, {
-				title: editTitle.trim(),
-				content: editContent
-			});
+				updateChapter(safeProjectId, editingChapter.id, {
+					title: editTitle.trim(),
+					content: editContent.trim()
+				});
 			refreshChapters();
 			closeEditChapterForm();
 		}
@@ -79,8 +80,8 @@
 	// 删除章节
 	function handleDeleteChapter(chapterId: string) {
 		if (confirm('确定要删除这个章节吗？')) {
-			deleteChapter(projectId, chapterId);
-			refreshChapters();
+				deleteChapter(safeProjectId, chapterId);
+				refreshChapters();
 		}
 	}
 
@@ -105,7 +106,7 @@
 			newOrder.splice(draggedIndex, 1);
 			newOrder.splice(targetIndex, 0, draggedChapter.id);
 
-			reorderChapters(projectId, newOrder);
+			reorderChapters(safeProjectId, newOrder);
 			refreshChapters();
 		}
 		draggedChapter = null;
@@ -155,12 +156,10 @@
 		{:else}
 			{#each chapters as chapter}
 				<div 
-					draggable="true"
-					on:dragstart={() => onDragStart(chapter)}
-					on:dragover={onDragOver}
-					on:drop={() => onDrop(chapter)}
-					class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
-				>
+		draggable="true"
+		{...{ dragstart: () => onDragStart(chapter), dragover: onDragOver, drop: () => onDrop(chapter) } as any}
+		class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
+	>
 					<div class="flex justify-between items-start">
 						<div class="flex items-center space-x-3">
 							<div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium">
@@ -203,23 +202,25 @@
 			<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">添加新章节</h2>
 			<div class="space-y-4">
 				<div>
-					<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节标题</label>
-					<input 
-						type="text" 
-						bind:value={newChapterTitle} 
-						class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-						placeholder="输入章节标题"
-					/>
-				</div>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节内容</label>
-					<textarea 
-						bind:value={newChapterContent} 
-						rows={6} 
-						class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-						placeholder="输入章节内容"
-					></textarea>
-				</div>
+							<label for="newChapterTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节标题</label>
+							<input 
+								id="newChapterTitle"
+								type="text" 
+								bind:value={newChapterTitle} 
+								class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+								placeholder="输入章节标题"
+							/>
+						</div>
+						<div>
+							<label for="newChapterContent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节内容</label>
+							<textarea 
+								id="newChapterContent"
+								bind:value={newChapterContent} 
+								rows={6} 
+								class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+								placeholder="输入章节内容"
+							></textarea>
+						</div>
 				<div class="flex justify-end space-x-2">
 					<button 
 						onclick={closeAddChapterForm} 
@@ -244,23 +245,25 @@
 			<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">编辑章节</h2>
 			<div class="space-y-4">
 				<div>
-					<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节标题</label>
-					<input 
-						type="text" 
-						bind:value={editTitle} 
-						class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-						placeholder="输入章节标题"
-					/>
-				</div>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节内容</label>
-					<textarea 
-						bind:value={editContent} 
-						rows={6} 
-						class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-						placeholder="输入章节内容"
-					></textarea>
-				</div>
+							<label for="editTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节标题</label>
+							<input 
+								id="editTitle"
+								type="text" 
+								bind:value={editTitle} 
+								class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+								placeholder="输入章节标题"
+							/>
+						</div>
+						<div>
+							<label for="editContent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">章节内容</label>
+							<textarea 
+								id="editContent"
+								bind:value={editContent} 
+								rows={6} 
+								class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+								placeholder="输入章节内容"
+							></textarea>
+						</div>
 				<div class="flex justify-end space-x-2">
 					<button 
 						onclick={closeEditChapterForm} 
