@@ -11,13 +11,15 @@
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 		// 创建项目
-		const newProject = addProject({
+		const newProject = await addProject({
 			name: projectName,
 			type: projectType,
 			description: projectDescription
 		});
 		// 跳转到项目编辑页
-		throw redirect(302, `/project/${newProject.id}`);
+		if (newProject) {
+			throw redirect(302, `/project/${newProject.id}`);
+		}
 	}
 </script>
 

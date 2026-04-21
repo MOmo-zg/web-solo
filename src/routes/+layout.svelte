@@ -23,7 +23,7 @@
 	let user = $state(getUser());
 	let loggedIn = $state(isLoggedIn());
 
-	onMount(() => {
+	onMount(async () => {
 		applyTheme(theme);
 		setupThemeListener();
 		// 清除旧的localStorage数据，显示新的模拟项目
@@ -31,7 +31,7 @@
 			localStorage.removeItem('projects');
 		}
 		// 加载项目列表
-		projects = getProjects();
+		projects = await getProjects();
 	});
 
 	function toggleSidebar() {

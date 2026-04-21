@@ -149,6 +149,7 @@ export async function getProjectById(id: string): Promise<Project | null> {
 		console.error('获取项目失败:', error);
 		return null;
 	}
+}
 
 // 添加章节
 export async function addChapter(projectId: string, chapter: Omit<Chapter, 'id' | 'order' | 'created_at' | 'updated_at'>): Promise<Chapter | null> {
