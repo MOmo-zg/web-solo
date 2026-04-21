@@ -54,45 +54,69 @@ export function isLoggedIn(): boolean {
 	return getUser() !== null;
 }
 
-// 模拟登录
+// 登录
 export async function login(email: string, password: string): Promise<User> {
-	// 模拟网络延迟
-	await new Promise(resolve => setTimeout(resolve, 1000));
+	try {
+		const response = await fetch('http://localhost:3001/api/auth/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ email, password })
+		});
 
-	// 模拟登录成功
-	const user: User = {
-		id: '1',
-		username: '用户21002254381',
-		email: email,
-		avatar: '',
-		created_at: new Date().toISOString()
-	};
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '登录失败');
+		}
 
-	saveUser(user);
-	return user;
+		const data = await response.json();
+		saveUser(data.user);
+		// 保存 token 到本地存储
+		if (data.token) {
+			if (isBrowser()) {
+				localStorage.setItem('token', data.token);
+			}
+		}
+		return data.user;
+	} catch (error) {
+		console.error('登录失败:', error);
+		throw error;
+	}
 }
 
-// 模拟注册
+// 注册
 export async function register(username: string, email: string, password: string): Promise<User> {
-	// 模拟网络延迟
-	await new Promise(resolve => setTimeout(resolve, 1000));
+	try {
+		const response = await fetch('http://localhost:3001/api/auth/register', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ username, email, password })
+		});
 
-	// 模拟注册成功
-	const user: User = {
-		id: Date.now().toString(),
-		username: username,
-		email: email,
-		avatar: '',
-		created_at: new Date().toISOString()
-	};
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '注册失败');
+		}
 
-	saveUser(user);
-	return user;
+		const data = await response.json();
+		saveUser(data.user);
+		return data.user;
+	} catch (error) {
+		console.error('注册失败:', error);
+		throw error;
+	}
 }
 
-// 模拟登出
+// 登出
 export function logout(): void {
 	clearUser();
+	// 清除 token
+	if (isBrowser()) {
+		localStorage.removeItem('token');
+	}
 }
 
 // 更新用户信息
@@ -134,15 +158,63 @@ export function getUserSettings(): UserSettings {
 	};
 }
 
-// 更改密码（模拟）
+// 更改密码
 export async function changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
-	await new Promise(resolve => setTimeout(resolve, 1000));
-	return true;
+	try {
+		const token = isBrowser() ? localStorage.getItem('token') : null;
+		if (!token) {
+			throw new Error('未登录');
+		}
+
+		const response = await fetch('http://localhost:3001/api/auth/change-password', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			body: JSON.stringify({ oldPassword, newPassword })
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '更改密码失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('更改密码失败:', error);
+		throw error;
+	}
 }
 
-// 上传头像（模拟）
+// 上传头像
 export async function uploadAvatar(file: File): Promise<string> {
-	await new Promise(resolve => setTimeout(resolve, 1000));
-	// 模拟返回头像URL
-	return 'https://example.com/avatar.jpg';
+	try {
+		const token = isBrowser() ? localStorage.getItem('token') : null;
+		if (!token) {
+			throw new Error('未登录');
+		}
+
+		const formData = new FormData();
+		formData.append('avatar', file);
+
+		const response = await fetch('http://localhost:3001/api/auth/upload-avatar', {
+			method: 'POST',
+			headers: {
+				'Authorization': `Bearer ${token}`
+			},
+			body: formData
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '上传头像失败');
+		}
+
+		const data = await response.json();
+		return data.avatarUrl;
+	} catch (error) {
+		console.error('上传头像失败:', error);
+		throw error;
+	}
 }

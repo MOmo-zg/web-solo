@@ -8,6 +8,8 @@
 	let confirmPassword = $state('');
 	let isLoading = $state(false);
 	let error = $state('');
+	let showPassword = $state(false);
+	let showConfirmPassword = $state(false);
 
 	async function handleRegister() {
 		error = '';
@@ -27,15 +29,15 @@
 		}
 
 		try {
-			isLoading = true;
-			await register(username, email, password);
-			// 注册成功，跳转到首页
-			goto('/');
-		} catch (err) {
-			error = '注册失败，请稍后重试';
-		} finally {
-			isLoading = false;
-		}
+		isLoading = true;
+		await register(username, email, password);
+		// 注册成功，跳转到首页
+		goto('/');
+	} catch (err) {
+		error = err instanceof Error ? err.message : '注册失败，请稍后重试';
+	} finally {
+		isLoading = false;
+	}
 	}
 
 	function handleKeyPress(e: KeyboardEvent) {
@@ -88,31 +90,57 @@
 				/>
 			</div>
 
-			<div>
-				<label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">密码</label>
-				<input
-					id="password"
-					type="password"
-					bind:value={password}
-					onkeypress={handleKeyPress}
-					class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-colors"
-					placeholder="请输入密码"
-					required
-				/>
-			</div>
+			<div class="relative">
+			<label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">密码</label>
+			<input
+				id="password"
+				type={showPassword ? 'text' : 'password'}
+				bind:value={password}
+				onkeypress={handleKeyPress}
+				class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-colors pr-10"
+				placeholder="请输入密码"
+				required
+			/>
+			<button
+				onclick={() => showPassword = !showPassword}
+				class="absolute right-3 top-10 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none"
+				aria-label={showPassword ? '隐藏密码' : '显示密码'}
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					{#if showPassword}
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a9.97 9.97 0 01-1.563 3.029m-5.858-.908a3 3 0 10-4.243-4.243M9.878 9.878l-4.242-4.242M9.878 9.878l3.29 3.29" />
+					{:else}
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					{/if}
+				</svg>
+			</button>
+		</div>
 
-			<div>
-				<label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">确认密码</label>
-				<input
-					id="confirmPassword"
-					type="password"
-					bind:value={confirmPassword}
-					onkeypress={handleKeyPress}
-					class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-colors"
-					placeholder="请确认密码"
-					required
-				/>
-			</div>
+		<div class="relative">
+			<label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">确认密码</label>
+			<input
+				id="confirmPassword"
+				type={showConfirmPassword ? 'text' : 'password'}
+				bind:value={confirmPassword}
+				onkeypress={handleKeyPress}
+				class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-colors pr-10"
+				placeholder="请确认密码"
+				required
+			/>
+			<button
+				onclick={() => showConfirmPassword = !showConfirmPassword}
+				class="absolute right-3 top-10 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none"
+				aria-label={showConfirmPassword ? '隐藏密码' : '显示密码'}
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					{#if showConfirmPassword}
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a9.97 9.97 0 01-1.563 3.029m-5.858-.908a3 3 0 10-4.243-4.243M9.878 9.878l-4.242-4.242M9.878 9.878l3.29 3.29" />
+					{:else}
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					{/if}
+				</svg>
+			</button>
+		</div>
 
 			<button
 				onclick={handleRegister}
