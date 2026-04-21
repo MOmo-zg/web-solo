@@ -23,6 +23,10 @@
 	onMount(() => {
 		applyTheme(theme);
 		setupThemeListener();
+		// 清除旧的localStorage数据，显示新的模拟项目
+		if (typeof localStorage !== 'undefined') {
+			localStorage.removeItem('projects');
+		}
 		// 加载项目列表
 		projects = getProjects();
 	});
@@ -123,7 +127,7 @@
 						</svg>
 					</button>
 				</div>
-				<div class="space-y-1 overflow-y-auto">
+				<div class="space-y-1 overflow-y-auto max-h-80">
 					{#if projects.length === 0}
 						<div class="flex items-center space-x-2 text-gray-400 py-2">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

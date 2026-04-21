@@ -62,6 +62,38 @@ function getMockProjects(): Project[] {
 			description: '都市生活的故事',
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
+		},
+		{
+			id: '4',
+			name: '武侠江湖传说',
+			type: '武侠',
+			description: '武林中的英雄故事',
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString()
+		},
+		{
+			id: '5',
+			name: '历史王朝风云',
+			type: '历史',
+			description: '古代王朝的兴衰',
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString()
+		},
+		{
+			id: '6',
+			name: '浪漫爱情故事',
+			type: '爱情',
+			description: '甜蜜的恋爱故事',
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString()
+		},
+		{
+			id: '7',
+			name: '悬疑推理小说',
+			type: '悬疑',
+			description: '解开神秘案件的真相',
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString()
 		}
 	];
 }
