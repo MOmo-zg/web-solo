@@ -110,7 +110,10 @@
 			</button>
 		</form>
 
-		<div class="mt-6 text-center">
+		<div class="mt-6 space-y-2 text-center">
+			<p class="text-gray-600 dark:text-gray-400 text-sm">
+				<a href="/auth/reset-password" class="text-blue-500 hover:text-blue-600 font-medium">忘记密码？</a>
+			</p>
 			<p class="text-gray-600 dark:text-gray-400 text-sm">
 				还没有账号？
 				<a href="/auth/register" class="text-blue-500 hover:text-blue-600 font-medium">立即注册</a>

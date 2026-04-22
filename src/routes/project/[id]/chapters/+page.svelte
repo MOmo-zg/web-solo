@@ -205,12 +205,12 @@
 			{:else}
 				{#each chapters as chapter}
 					<div 
-						draggable="true"
-						ondragstart={() => onDragStart(chapter)}
-						on dragover={onDragOver}
-						on drop={() => onDrop(chapter)}
-						class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
-					>
+					draggable="true"
+					ondragstart={() => onDragStart(chapter)}
+					ondragover={onDragOver}
+					ondrop={() => onDrop(chapter)}
+					class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
+				>
 						<div class="flex justify-between items-start">
 							<div class="flex items-center space-x-3">
 								<div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium">
@@ -223,7 +223,7 @@
 							</div>
 							<div class="flex space-x-2">
 								<button 
-									on:click={() => openEditChapterForm(chapter)} 
+									onclick={() => openEditChapterForm(chapter)} 
 									disabled={isLoading}
 									class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 									aria-label="编辑章节"
@@ -233,7 +233,7 @@
 									</svg>
 								</button>
 								<button 
-									on:click={() => handleDeleteChapter(chapter.id)} 
+									onclick={() => handleDeleteChapter(chapter.id)} 
 									disabled={isLoading}
 									class="p-2 text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 									aria-label="删除章节"

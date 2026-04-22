@@ -10,7 +10,7 @@ const openai = new OpenAI({
 });
 
 // 生成小说内容
-export async function generateNovelContent(prompt, options = {}) {
+export async function generateNovelContent(prompt, context, options = {}) {
   try {
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production' || !process.env.OPENAI_API_KEY) {
@@ -22,32 +22,45 @@ export async function generateNovelContent(prompt, options = {}) {
         "现代都市，一位普通的上班族发现自己拥有了看透人心的能力。他开始利用这个能力帮助别人，但很快发现这个能力也给他带来了麻烦。",
         "奇幻世界，一位年轻的魔法师正在学习控制自己的力量。在一次意外中，他打开了一个通往平行世界的 portal，发现了一个完全不同的自己。"
       ];
-      
+
       // 随机选择一个模拟响应
       const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-      
+
       // 模拟网络延迟
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       return {
         success: true,
         content: randomResponse
       };
     }
 
+    // 构建消息
+    const messages = [
+      {
+        role: 'system',
+        content: '你是一位专业的小说作家，擅长创作各种类型的小说内容。请根据用户的提示和上下文，生成高质量、有创意的小说内容。'
+      }
+    ];
+
+    // 添加上下文（如果有）
+    if (context) {
+      messages.push({
+        role: 'system',
+        content: `上下文信息：\n${context}`
+      });
+    }
+
+    // 添加用户提示
+    messages.push({
+      role: 'user',
+      content: prompt
+    });
+
     // 生产环境使用真实 OpenAI API
     const response = await openai.chat.completions.create({
       model: options.model || 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: '你是一位专业的小说作家，擅长创作各种类型的小说内容。请根据用户的提示，生成高质量、有创意的小说内容。'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
+      messages: messages,
       temperature: options.temperature || 0.7,
       max_tokens: options.maxTokens || 500,
       top_p: options.topP || 1,

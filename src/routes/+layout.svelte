@@ -8,7 +8,26 @@
 	import { getProjects, type Project } from '$lib/utils/project';
 	import { getUser, logout, isLoggedIn } from '$lib/utils/auth';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, type Component } from 'svelte';
+	
+	// 懒加载 AgentChat 组件
+	let AgentChatComponent = $state<Component | null>(null);
+	let isAgentChatLoaded = $state(false);
+	
+	async function loadAgentChat() {
+		if (!isAgentChatLoaded) {
+			const module = await import('$lib/components/AgentChat.svelte');
+			AgentChatComponent = module.default;
+			isAgentChatLoaded = true;
+		}
+	}
+	
+	// 当右侧边栏打开时加载 AgentChat 组件
+	$effect(() => {
+		if (rightSidebarOpen && !isAgentChatLoaded) {
+			loadAgentChat();
+		}
+	});
 
 	let { children } = $props();
 	let sidebarOpen = $state(true);
@@ -367,7 +386,7 @@
 	<!-- 右侧栏 -->
 	<div class={`${rightSidebarOpen ? 'w-80' : 'w-0'} bg-gray-50 dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
 		<div class="p-4 border-b border-gray-700 flex justify-between items-center">
-			<span class="font-medium">小说信息</span>
+			<span class="font-medium">小说创作助手</span>
 			<button onclick={toggleRightSidebar} class="text-gray-400 hover:text-white" aria-label="关闭右侧边栏">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
@@ -375,30 +394,19 @@
 			</button>
 		</div>
 		
-		<div class="p-4 overflow-y-auto flex-1">
-			<!-- 当前小说信息 -->
-			<div class="mb-6">
-				<h2 class="text-lg font-semibold text-blue-500 dark:text-blue-400 mb-3">当前小说</h2>
-				<div class="bg-gray-100 dark:bg-gray-700 rounded-md p-3">
-					<h3 class="text-gray-900 dark:text-white font-medium">奇幻冒险小说</h3>
-					<p class="text-gray-600 dark:text-gray-300 text-sm mt-1">写到：第一章 勇者的觉醒</p>
-					<p class="text-gray-500 dark:text-gray-400 text-xs mt-1">更新时间：2026-04-20</p>
-				</div>
-			</div>
-			
-			<!-- 模型上下文 -->
-			<div>
-				<h2 class="text-lg font-semibold text-blue-500 dark:text-blue-400 mb-3">模型上下文</h2>
-				<div class="bg-gray-100 dark:bg-gray-700 rounded-md p-3">
-					<div class="text-gray-600 dark:text-gray-300 text-sm space-y-2">
-						<p>• 世界观：中世纪奇幻世界，存在魔法和各种种族</p>
-						<p>• 主角：年轻的勇者艾伦，拥有特殊的魔法天赋</p>
-						<p>• 情节：勇者需要收集五颗宝石来拯救世界</p>
-						<p>• 反派：邪恶的黑龙，想要毁灭世界</p>
-						<p>• 当前进度：第一章 勇者的觉醒</p>
+		{#if isAgentChatLoaded && AgentChatComponent}
+			<AgentChatComponent />
+		{:else}
+			<div class="flex-1 flex items-center justify-center p-4">
+				<div class="flex flex-col items-center space-y-2">
+					<div class="flex space-x-2">
+						<div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+						<div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+						<div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
 					</div>
+					<p class="text-gray-500 dark:text-gray-400 text-sm">加载助手...</p>
 				</div>
 			</div>
-		</div>
+		{/if}
 	</div>
 </div>

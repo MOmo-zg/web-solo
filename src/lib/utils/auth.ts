@@ -218,3 +218,26 @@ export async function uploadAvatar(file: File): Promise<string> {
 		throw error;
 	}
 }
+
+// 重置密码
+export async function resetPassword(email: string): Promise<boolean> {
+	try {
+		const response = await fetch('http://localhost:3001/api/auth/reset-password', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ email })
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '重置密码失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('重置密码失败:', error);
+		throw error;
+	}
+}

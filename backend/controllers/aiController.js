@@ -3,7 +3,7 @@ import { generateNovelContent, generateNovelTitle, generateNovelOutline } from '
 // 生成小说内容
 export const generateContent = async (req, res) => {
   try {
-    const { prompt, options } = req.body;
+    const { prompt, context, options } = req.body;
 
     // 验证输入
     if (!prompt) {
@@ -11,7 +11,7 @@ export const generateContent = async (req, res) => {
     }
 
     // 调用 OpenAI 工具生成内容
-    const result = await generateNovelContent(prompt, options);
+    const result = await generateNovelContent(prompt, context, options);
 
     if (!result.success) {
       return res.status(500).json({ error: result.error });
