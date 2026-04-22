@@ -16,15 +16,15 @@
 		}
 
 		try {
-		isLoading = true;
-		await login(email, password);
-		// 登录成功，跳转到首页
-		goto('/');
-	} catch (err) {
-		error = err instanceof Error ? err.message : '登录失败，请检查邮箱和密码';
-	} finally {
-		isLoading = false;
-	}
+			isLoading = true;
+			await login(email, password);
+			// 登录成功，跳转到首页
+			goto('/');
+		} catch (err) {
+			error = err instanceof Error ? err.message : '登录失败，请检查邮箱和密码';
+		} finally {
+			isLoading = false;
+		}
 	}
 
 	function handleKeyPress(e: KeyboardEvent) {

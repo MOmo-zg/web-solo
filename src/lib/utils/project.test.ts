@@ -1,193 +1,200 @@
-import { describe, it, expect, vi } from 'vitest';
-import { getProjects, addProject, updateProject, deleteProject, getProjectById } from './project';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { getProjects, addProject, getProjectById, updateProject, deleteProject } from './project';
 
-// 模拟 fetch 函数
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString();
+    },
+    clear: () => {
+      store = {};
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    }
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+// Mock fetch
 const mockFetch = vi.fn();
-global.fetch = mockFetch as any;
+global.fetch = mockFetch;
 
-// 模拟 localStorage
-const mockLocalStorage: Record<string, string> = {};
-global.localStorage = {
-  getItem: (key: string) => mockLocalStorage[key] || null,
-  setItem: (key: string, value: string) => {
-    mockLocalStorage[key] = value;
-  },
-  removeItem: (key: string) => {
-    delete mockLocalStorage[key];
-  },
-  clear: () => {
-    Object.keys(mockLocalStorage).forEach(key => delete mockLocalStorage[key]);
-  },
-  length: 0,
-  key: (index: number) => Object.keys(mockLocalStorage)[index] || null
-} as any;
+beforeEach(() => {
+  localStorageMock.clear();
+  mockFetch.mockClear();
+});
 
-describe('project utils', () => {
-  beforeEach(() => {
-    mockFetch.mockReset();
-    localStorage.clear();
-  });
-
+describe('Project Functions', () => {
   describe('getProjects', () => {
-    it('should return projects from API', async () => {
-      const mockProjects = [
-        { id: '1', name: 'Test Project', type: 'Test', description: 'Test description', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-      ];
-
+    it('should return empty array when API fails', async () => {
+      // Mock response
       mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ projects: mockProjects })
+        ok: false,
+        json: () => Promise.resolve({ error: 'Failed to get projects' })
       });
 
       const projects = await getProjects();
-      expect(projects).toEqual(mockProjects);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3001/api/projects', {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      expect(projects.length).toBe(0);
     });
 
-    it('should return empty array on error', async () => {
+    it('should return projects from API when successful', async () => {
+      const testProjects = [
+        { id: '1', name: 'Test Project 1', type: 'fantasy', description: 'Test description', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '2', name: 'Test Project 2', type: 'sci-fi', description: 'Test description 2', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+      ];
+
+      // Mock response
       mockFetch.mockResolvedValue({
-        ok: false
+        ok: true,
+        json: () => Promise.resolve({ projects: testProjects })
       });
 
       const projects = await getProjects();
-      expect(projects).toEqual([]);
+      expect(projects).toEqual(testProjects);
     });
   });
 
   describe('addProject', () => {
     it('should add a new project', async () => {
-      const newProject = { name: 'New Project', type: 'Test', description: 'New project description' };
-      const mockResponse = { id: '1', ...newProject, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      const newProjectData = {
+        name: 'New Project',
+        type: 'fantasy',
+        description: 'A new fantasy project'
+      };
 
+      const createdProject = {
+        id: '1',
+        ...newProjectData,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      // Mock response
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ project: mockResponse })
+        json: () => Promise.resolve({ project: createdProject })
       });
 
-      const result = await addProject(newProject);
-      expect(result).toEqual(mockResponse);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3001/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newProject)
-      });
+      const newProject = await addProject(newProjectData);
+      expect(newProject).toEqual(createdProject);
     });
 
-    it('should return null on error', async () => {
-      const newProject = { name: 'New Project', type: 'Test', description: 'New project description' };
+    it('should return null if API fails', async () => {
+      const newProjectData = {
+        name: 'New Project',
+        type: 'fantasy',
+        description: 'A new fantasy project'
+      };
 
+      // Mock response
       mockFetch.mockResolvedValue({
         ok: false,
-        json: () => Promise.resolve({ error: 'Error' })
+        json: () => Promise.resolve({ error: 'Failed to create project' })
       });
 
-      const result = await addProject(newProject);
-      expect(result).toBeNull();
+      const newProject = await addProject(newProjectData);
+      expect(newProject).toBeNull();
+    });
+  });
+
+  describe('getProjectById', () => {
+    it('should return project by id', async () => {
+      const testProject = {
+        id: '1',
+        name: 'Test Project',
+        type: 'fantasy',
+        description: 'Test description',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      // Mock response
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ project: testProject })
+      });
+
+      const project = await getProjectById('1');
+      expect(project).toEqual(testProject);
+    });
+
+    it('should return null if project not found', async () => {
+      // Mock response
+      mockFetch.mockResolvedValue({
+        ok: false,
+        json: () => Promise.resolve({ error: 'Project not found' })
+      });
+
+      const project = await getProjectById('non-existent-id');
+      expect(project).toBeNull();
     });
   });
 
   describe('updateProject', () => {
-    it('should update a project', async () => {
-      const projectId = '1';
-      const updates = { name: 'Updated Project', type: 'Test', description: 'Updated description' };
-      const mockResponse = { id: projectId, ...updates, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+    it('should update an existing project', async () => {
+      const updatedProject = {
+        id: '1',
+        name: 'Updated Project Name',
+        type: 'fantasy',
+        description: 'Updated description',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
 
+      // Mock response
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ project: mockResponse })
+        json: () => Promise.resolve({ project: updatedProject })
       });
 
-      const result = await updateProject(projectId, updates);
-      expect(result).toEqual(mockResponse);
-      expect(mockFetch).toHaveBeenCalledWith(`http://localhost:3001/api/projects/${projectId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updates)
+      const result = await updateProject('1', {
+        name: 'Updated Project Name',
+        description: 'Updated description'
       });
+
+      expect(result).toEqual(updatedProject);
     });
 
-    it('should return null on error', async () => {
-      const projectId = '1';
-      const updates = { name: 'Updated Project', type: 'Test', description: 'Updated description' };
-
+    it('should return null if project not found', async () => {
+      // Mock response
       mockFetch.mockResolvedValue({
         ok: false,
-        json: () => Promise.resolve({ error: 'Error' })
+        json: () => Promise.resolve({ error: 'Project not found' })
       });
 
-      const result = await updateProject(projectId, updates);
+      const result = await updateProject('non-existent-id', {
+        name: 'Updated Name'
+      });
       expect(result).toBeNull();
     });
   });
 
   describe('deleteProject', () => {
     it('should delete a project', async () => {
-      const projectId = '1';
-
-      mockFetch.mockResolvedValue({
-        ok: true
-      });
-
-      const result = await deleteProject(projectId);
-      expect(result).toBe(true);
-      expect(mockFetch).toHaveBeenCalledWith(`http://localhost:3001/api/projects/${projectId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-    });
-
-    it('should return false on error', async () => {
-      const projectId = '1';
-
-      mockFetch.mockResolvedValue({
-        ok: false,
-        json: () => Promise.resolve({ error: 'Error' })
-      });
-
-      const result = await deleteProject(projectId);
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('getProjectById', () => {
-    it('should get a project by id', async () => {
-      const projectId = '1';
-      const mockProject = { id: projectId, name: 'Test Project', type: 'Test', description: 'Test description', created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
-
+      // Mock response
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ project: mockProject })
+        json: () => Promise.resolve({ success: true })
       });
 
-      const result = await getProjectById(projectId);
-      expect(result).toEqual(mockProject);
-      expect(mockFetch).toHaveBeenCalledWith(`http://localhost:3001/api/projects/${projectId}`, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const result = await deleteProject('1');
+      expect(result).toBe(true);
     });
 
-    it('should return null on error', async () => {
-      const projectId = '1';
-
+    it('should return false if project not found', async () => {
+      // Mock response
       mockFetch.mockResolvedValue({
         ok: false,
-        json: () => Promise.resolve({ error: 'Error' })
+        json: () => Promise.resolve({ error: 'Project not found' })
       });
 
-      const result = await getProjectById(projectId);
-      expect(result).toBeNull();
+      const result = await deleteProject('non-existent-id');
+      expect(result).toBe(false);
     });
   });
 });

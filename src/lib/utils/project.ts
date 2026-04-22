@@ -454,8 +454,112 @@ export async function importProject(data: string, format: 'json' | 'markdown'): 
 	return null;
 }
 
+// 导出项目为 Word (DOCX)
+export async function exportProjectAsWord(projectId: string) {
+	const project = await getProjectById(projectId);
+	if (!project) {
+		return;
+	}
+
+	// 动态导入 docx
+	const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = await import('docx');
+
+	const doc = new Document({
+		title: project.name,
+		description: project.description,
+		authors: ['小说创作平台']
+	});
+
+	// 添加项目信息
+	doc.addSection({
+		properties: {},
+		children: [
+			new Paragraph({
+				text: '项目信息',
+				heading: HeadingLevel.HEADING_1,
+				alignment: AlignmentType.CENTER
+			}),
+			new Paragraph({
+				children: [
+					new TextRun({ text: '类型: ', bold: true }),
+					new TextRun({ text: project.type })
+				]
+			}),
+			new Paragraph({
+				children: [
+					new TextRun({ text: '描述: ', bold: true }),
+					new TextRun({ text: project.description })
+				]
+			}),
+			new Paragraph({
+				children: [
+					new TextRun({ text: '创建时间: ', bold: true }),
+					new TextRun({ text: new Date(project.created_at).toLocaleString() })
+				]
+			}),
+			new Paragraph({
+				children: [
+					new TextRun({ text: '更新时间: ', bold: true }),
+					new TextRun({ text: new Date(project.updated_at).toLocaleString() })
+				]
+			}),
+			new Paragraph({ text: '' }) // 空行
+		]
+	});
+
+	// 添加内容
+	if (project.content) {
+		doc.addSection({
+			properties: {},
+			children: [
+				new Paragraph({
+					text: '内容',
+					heading: HeadingLevel.HEADING_1,
+					alignment: AlignmentType.CENTER
+				}),
+				...project.content.split('\n').map(line => new Paragraph({ text: line })),
+				new Paragraph({ text: '' }) // 空行
+			]
+		});
+	}
+
+	// 添加章节
+	if (project.chapters && project.chapters.length > 0) {
+		project.chapters.forEach((chapter, index) => {
+			doc.addSection({
+				properties: {},
+				children: [
+					new Paragraph({
+						text: `第${index + 1}章 ${chapter.title}`,
+						heading: HeadingLevel.HEADING_1,
+						alignment: AlignmentType.CENTER
+					}),
+					...chapter.content.split('\n').map(line => new Paragraph({ text: line })),
+					new Paragraph({ text: '' }) // 空行
+				]
+			});
+		});
+	}
+
+	// 生成 DOCX 文件
+	const buffer = await Packer.toBuffer(doc);
+	
+	// 下载文件
+	if (typeof window !== 'undefined') {
+		const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `${project.name}.docx`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+}
+
 // 导出并下载项目
-export async function exportAndDownloadProject(projectId: string, format: 'markdown' | 'txt' | 'pdf' | 'epub') {
+export async function exportAndDownloadProject(projectId: string, format: 'markdown' | 'txt' | 'pdf' | 'epub' | 'docx') {
 	const project = await getProjectById(projectId);
 	if (!project) {
 		return false;
@@ -471,6 +575,8 @@ export async function exportAndDownloadProject(projectId: string, format: 'markd
 		await exportProjectAsPdf(projectId);
 	} else if (format === 'epub') {
 		await exportProjectAsEpub(projectId);
+	} else if (format === 'docx') {
+		await exportProjectAsWord(projectId);
 	}
 
 	return true;

@@ -39,7 +39,7 @@
 	}
 
 	// 导出格式
-	let exportFormat = $state<'markdown' | 'txt' | 'pdf' | 'epub'>('markdown');
+let exportFormat = $state<'markdown' | 'txt' | 'pdf' | 'epub' | 'docx'>('markdown');
 
 	// 导出状态
 	let isExporting = $state(false);
@@ -194,6 +194,20 @@
 								</div>
 							</div>
 						</button>
+						<button 
+							onclick={() => exportFormat = 'docx'} 
+							class={`p-4 border rounded-lg transition-colors ${exportFormat === 'docx' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+						>
+							<div class="flex items-center space-x-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+								</svg>
+								<div>
+									<h4 class="font-medium text-gray-900 dark:text-white">Word (DOCX)</h4>
+									<p class="text-sm text-gray-500 dark:text-gray-400">Word格式，适合在Microsoft Word中编辑</p>
+								</div>
+							</div>
+						</button>
 					</div>
 			</div>
 
@@ -225,10 +239,11 @@
 			<h3 class="font-medium text-gray-900 dark:text-white mb-3">导出说明</h3>
 			<ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 list-disc pl-5">
 						<li>导出文件将包含项目的所有信息，包括项目信息、内容和章节</li>
-						<li>纯文本格式适合在普通文本编辑器中查看</li>
-						<li>PDF 格式适合打印和在PDF阅读器中查看</li>
-						<li>EPUB 格式适合在电子书阅读器中查看</li>
-						<li>导出的文件将自动下载到您的设备</li>
+								<li>纯文本格式适合在普通文本编辑器中查看</li>
+								<li>PDF 格式适合打印和在PDF阅读器中查看</li>
+								<li>EPUB 格式适合在电子书阅读器中查看</li>
+								<li>Word 格式适合在Microsoft Word中编辑</li>
+								<li>导出的文件将自动下载到您的设备</li>
 					</ul>
 		</div>
 	{/if}

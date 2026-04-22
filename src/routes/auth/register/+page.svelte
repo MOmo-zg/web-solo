@@ -29,15 +29,15 @@
 		}
 
 		try {
-		isLoading = true;
-		await register(username, email, password);
-		// 注册成功，跳转到首页
-		goto('/');
-	} catch (err) {
-		error = err instanceof Error ? err.message : '注册失败，请稍后重试';
-	} finally {
-		isLoading = false;
-	}
+			isLoading = true;
+			await register(username, email, password);
+			// 注册成功，跳转到首页
+			goto('/');
+		} catch (err) {
+			error = err instanceof Error ? err.message : '注册失败，请稍后重试';
+		} finally {
+			isLoading = false;
+		}
 	}
 
 	function handleKeyPress(e: KeyboardEvent) {
