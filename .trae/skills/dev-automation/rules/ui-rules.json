@@ -1,0 +1,97 @@
+{
+  "ui": {
+    "rules": {
+      "button-feedback": {
+        "enabled": true,
+        "severity": "warning",
+        "description": "按钮应提供清晰的悬停、点击和禁用状态反馈",
+        "guidelines": [
+          "默认状态：清晰的背景色和文字对比",
+          "悬停状态：背景色变深或变亮，添加轻微的阴影效果",
+          "点击状态：背景色进一步变化，按钮轻微收缩",
+          "禁用状态：降低透明度，鼠标指针变为禁用状态"
+        ],
+        "implementation": "使用 bg-blue-600 hover:bg-blue-700 hover:shadow-md transition-all duration-200 active:scale-95 等类"
+      },
+      "link-feedback": {
+        "enabled": true,
+        "severity": "warning",
+        "description": "链接应提供清晰的悬停和点击状态反馈",
+        "guidelines": [
+          "默认状态：蓝色文字，无下划线",
+          "悬停状态：文字颜色变浅，添加下划线",
+          "点击状态：文字颜色进一步变化"
+        ],
+        "implementation": "使用 text-blue-600 hover:text-blue-400 hover:underline transition-colors duration-200 等类"
+      },
+      "card-feedback": {
+        "enabled": true,
+        "severity": "warning",
+        "description": "卡片应提供清晰的悬停和点击状态反馈",
+        "guidelines": [
+          "默认状态：轻微的边框和背景色",
+          "悬停状态：边框颜色变化，添加轻微的阴影和上浮效果",
+          "点击状态：轻微的收缩效果"
+        ],
+        "implementation": "使用 border border-gray-200 hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 等类"
+      },
+      "form-feedback": {
+        "enabled": true,
+        "severity": "warning",
+        "description": "表单元素应提供清晰的聚焦、错误和成功状态反馈",
+        "guidelines": [
+          "默认状态：清晰的边框和背景",
+          "聚焦状态：边框颜色变化，添加轻微的发光效果",
+          "错误状态：红色边框和错误提示",
+          "成功状态：绿色边框和成功提示"
+        ],
+        "implementation": "使用 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 等类"
+      },
+      "navigation-feedback": {
+        "enabled": true,
+        "severity": "warning",
+        "description": "导航元素应提供清晰的悬停和激活状态反馈",
+        "guidelines": [
+          "默认状态：标准文字颜色",
+          "悬停状态：文字颜色变为主题色",
+          "激活状态：背景色变化，文字颜色变为白色"
+        ],
+        "implementation": "使用 text-gray-700 hover:text-blue-600 transition-colors duration-200 等类"
+      },
+      "animation-performance": {
+        "enabled": true,
+        "severity": "info",
+        "description": "动画效果应考虑性能",
+        "guidelines": [
+          "使用 CSS transitions 而非 JavaScript 动画",
+          "优先使用 transform 和 opacity 属性",
+          "避免使用会触发重排的属性"
+        ],
+        "implementation": "使用 transition-all duration-200 等类，优先使用 transform 和 opacity"
+      },
+      "accessibility": {
+        "enabled": true,
+        "severity": "error",
+        "description": "确保所有交互元素都支持无障碍访问",
+        "guidelines": [
+          "所有可交互元素支持键盘导航",
+          "提供清晰的焦点状态",
+          "为所有交互元素添加适当的 aria-* 属性",
+          "确保颜色对比度符合 WCAG AA 标准"
+        ],
+        "implementation": "为按钮和链接添加 aria-label，确保键盘可访问性"
+      },
+      "responsive-design": {
+        "enabled": true,
+        "severity": "warning",
+        "description": "界面应适配不同屏幕尺寸",
+        "guidelines": [
+          "移动端：< 640px，增大触摸目标，最小尺寸 44px",
+          "平板：640px - 1024px，适当调整间距和字体大小",
+          "桌面：> 1024px，保持标准交互元素尺寸"
+        ],
+        "implementation": "使用 Tailwind CSS 的响应式类，如 sm:, md:, lg: 等"
+      }
+    }
+  }
+}

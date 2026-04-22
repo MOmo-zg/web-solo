@@ -1,0 +1,43 @@
+2026-04-22T08:10:50.061Z [INFO] 服务器运行在 http://localhost:3001
+2026-04-22T08:18:23.126Z [INFO] 开发环境获取项目列表成功 {"projectCount":4}
+2026-04-22T08:18:23.125Z [INFO] 获取项目列表请求 {}
+2026-04-22T08:18:23.130Z [INFO] HTTP Request {"method":"GET","url":"/api/projects","statusCode":200,"responseTime":"5ms","ip":"::1"}
+2026-04-22T08:18:23.148Z [INFO] 获取项目列表请求 {}
+2026-04-22T08:18:23.148Z [INFO] 开发环境获取项目列表成功 {"projectCount":4}
+2026-04-22T08:18:23.148Z [INFO] HTTP Request {"method":"GET","url":"/api/projects","statusCode":200,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.169Z [INFO] 创建项目请求 {"name":"New Project","type":"fantasy","hasDescription":true}
+2026-04-22T08:18:23.170Z [INFO] 开发环境创建项目成功 {"projectId":"1776845903170","projectName":"New Project"}
+2026-04-22T08:18:23.170Z [INFO] HTTP Request {"method":"POST","url":"/api/projects","statusCode":201,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.173Z [INFO] 获取项目列表请求 {}
+2026-04-22T08:18:23.173Z [INFO] 开发环境获取项目列表成功 {"projectCount":4}
+2026-04-22T08:18:23.173Z [INFO] HTTP Request {"method":"GET","url":"/api/projects","statusCode":200,"responseTime":"0ms","ip":"::1"}
+2026-04-22T08:18:23.177Z [INFO] 获取项目列表请求 {}
+2026-04-22T08:18:23.178Z [INFO] HTTP Request {"method":"GET","url":"/api/projects","statusCode":200,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.177Z [INFO] 开发环境获取项目列表成功 {"projectCount":4}
+2026-04-22T08:18:23.180Z [INFO] 获取单个项目请求 {"projectId":"1"}
+2026-04-22T08:18:23.181Z [INFO] 开发环境获取单个项目成功 {"projectId":"1","projectName":"奇幻冒险小说"}
+2026-04-22T08:18:23.181Z [INFO] HTTP Request {"method":"GET","url":"/api/projects/1","statusCode":200,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.186Z [INFO] 获取单个项目请求 {"projectId":"non-existent-id"}
+2026-04-22T08:18:23.186Z [INFO] 开发环境获取单个项目成功 {"projectId":"non-existent-id","projectName":"奇幻冒险小说"}
+2026-04-22T08:18:23.187Z [INFO] HTTP Request {"method":"GET","url":"/api/projects/non-existent-id","statusCode":200,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.190Z [INFO] 获取项目列表请求 {}
+2026-04-22T08:18:23.190Z [INFO] 开发环境获取项目列表成功 {"projectCount":4}
+2026-04-22T08:18:23.191Z [INFO] HTTP Request {"method":"GET","url":"/api/projects","statusCode":200,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.195Z [INFO] 更新项目请求 {"projectId":"1","name":"Updated Project Name","hasDescription":true}
+2026-04-22T08:18:23.195Z [WARN] 更新项目缺少必要参数 {"projectId":"1","error":"请填写项目名称和类型"}
+2026-04-22T08:18:23.197Z [INFO] HTTP Request {"method":"PUT","url":"/api/projects/1","statusCode":400,"responseTime":"3ms","ip":"::1"}
+2026-04-22T08:18:23.202Z [INFO] 更新项目请求 {"projectId":"non-existent-id","name":"Updated Name","hasDescription":false}
+2026-04-22T08:18:23.202Z [WARN] 更新项目缺少必要参数 {"projectId":"non-existent-id","error":"请填写项目名称和类型"}
+2026-04-22T08:18:23.203Z [INFO] HTTP Request {"method":"PUT","url":"/api/projects/non-existent-id","statusCode":400,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.207Z [INFO] 获取项目列表请求 {}
+2026-04-22T08:18:23.207Z [INFO] 开发环境获取项目列表成功 {"projectCount":4}
+2026-04-22T08:18:23.207Z [INFO] HTTP Request {"method":"GET","url":"/api/projects","statusCode":200,"responseTime":"0ms","ip":"::1"}
+2026-04-22T08:18:23.209Z [INFO] 删除项目请求 {"projectId":"1"}
+2026-04-22T08:18:23.210Z [INFO] 开发环境删除项目成功 {"projectId":"1"}
+2026-04-22T08:18:23.211Z [INFO] HTTP Request {"method":"DELETE","url":"/api/projects/1","statusCode":200,"responseTime":"2ms","ip":"::1"}
+2026-04-22T08:18:23.211Z [INFO] 获取项目列表请求 {}
+2026-04-22T08:18:23.211Z [INFO] 开发环境获取项目列表成功 {"projectCount":4}
+2026-04-22T08:18:23.212Z [INFO] HTTP Request {"method":"GET","url":"/api/projects","statusCode":200,"responseTime":"1ms","ip":"::1"}
+2026-04-22T08:18:23.216Z [INFO] 开发环境删除项目成功 {"projectId":"non-existent-id"}
+2026-04-22T08:18:23.216Z [INFO] 删除项目请求 {"projectId":"non-existent-id"}
+2026-04-22T08:18:23.216Z [INFO] HTTP Request {"method":"DELETE","url":"/api/projects/non-existent-id","statusCode":200,"responseTime":"0ms","ip":"::1"}
