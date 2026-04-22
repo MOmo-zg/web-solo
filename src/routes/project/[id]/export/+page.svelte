@@ -39,7 +39,7 @@
 	}
 
 	// 导出格式
-	let exportFormat = $state<'markdown' | 'txt'>('markdown');
+	let exportFormat = $state<'markdown' | 'txt' | 'pdf' | 'epub'>('markdown');
 
 	// 导出状态
 	let isExporting = $state(false);
@@ -65,16 +65,19 @@
 	<!-- 项目导航 -->
 	<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
 		<div class="flex space-x-4">
-			<a href={`/project/${projectId}`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
-				编辑内容
-			</a>
-			<a href={`/project/${projectId}/chapters`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
-				章节管理
-			</a>
-			<a href={`/project/${projectId}/export`} class="px-4 py-2 rounded-md bg-blue-500 text-white font-medium">
-				导出项目
-			</a>
-		</div>
+						<a href={`/project/${projectId}`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+							编辑内容
+						</a>
+						<a href={`/project/${projectId}/chapters`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+							章节管理
+						</a>
+						<a href={`/project/${projectId}/export`} class="px-4 py-2 rounded-md bg-blue-500 text-white font-medium">
+							导出项目
+						</a>
+						<a href={`/project/${projectId}/versions`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+							版本控制
+						</a>
+					</div>
 	</div>
 
 	{#if isLoading}
@@ -135,35 +138,63 @@
 			<div class="mb-6">
 				<h3 class="font-medium text-gray-900 dark:text-white mb-3">选择导出格式</h3>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<button 
-						onclick={() => exportFormat = 'markdown'} 
-						class={`p-4 border rounded-lg transition-colors ${exportFormat === 'markdown' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-					>
-						<div class="flex items-center space-x-3">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-							</svg>
-							<div>
-								<h4 class="font-medium text-gray-900 dark:text-white">Markdown</h4>
-								<p class="text-sm text-gray-500 dark:text-gray-400">支持格式化文本，适合在Markdown编辑器中查看</p>
+						<button 
+							onclick={() => exportFormat = 'markdown'} 
+							class={`p-4 border rounded-lg transition-colors ${exportFormat === 'markdown' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+						>
+							<div class="flex items-center space-x-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+								</svg>
+								<div>
+									<h4 class="font-medium text-gray-900 dark:text-white">Markdown</h4>
+									<p class="text-sm text-gray-500 dark:text-gray-400">支持格式化文本，适合在Markdown编辑器中查看</p>
+								</div>
 							</div>
-						</div>
-					</button>
-					<button 
-						onclick={() => exportFormat = 'txt'} 
-						class={`p-4 border rounded-lg transition-colors ${exportFormat === 'txt' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-					>
-						<div class="flex items-center space-x-3">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-							</svg>
-							<div>
-								<h4 class="font-medium text-gray-900 dark:text-white">纯文本 (TXT)</h4>
-								<p class="text-sm text-gray-500 dark:text-gray-400">纯文本格式，适合在任何文本编辑器中查看</p>
+						</button>
+						<button 
+							onclick={() => exportFormat = 'txt'} 
+							class={`p-4 border rounded-lg transition-colors ${exportFormat === 'txt' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+						>
+							<div class="flex items-center space-x-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+								</svg>
+								<div>
+									<h4 class="font-medium text-gray-900 dark:text-white">纯文本 (TXT)</h4>
+									<p class="text-sm text-gray-500 dark:text-gray-400">纯文本格式，适合在任何文本编辑器中查看</p>
+								</div>
 							</div>
-						</div>
-					</button>
-				</div>
+						</button>
+						<button 
+							onclick={() => exportFormat = 'pdf'} 
+							class={`p-4 border rounded-lg transition-colors ${exportFormat === 'pdf' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+						>
+							<div class="flex items-center space-x-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+								</svg>
+								<div>
+									<h4 class="font-medium text-gray-900 dark:text-white">PDF</h4>
+									<p class="text-sm text-gray-500 dark:text-gray-400">PDF格式，适合打印和阅读</p>
+								</div>
+							</div>
+						</button>
+						<button 
+							onclick={() => exportFormat = 'epub'} 
+							class={`p-4 border rounded-lg transition-colors ${exportFormat === 'epub' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+						>
+							<div class="flex items-center space-x-3">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+								</svg>
+								<div>
+									<h4 class="font-medium text-gray-900 dark:text-white">EPUB</h4>
+									<p class="text-sm text-gray-500 dark:text-gray-400">EPUB格式，适合电子书阅读器</p>
+								</div>
+							</div>
+						</button>
+					</div>
 			</div>
 
 			<!-- 导出按钮 -->
@@ -193,11 +224,12 @@
 		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 			<h3 class="font-medium text-gray-900 dark:text-white mb-3">导出说明</h3>
 			<ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 list-disc pl-5">
-				<li>导出文件将包含项目的所有信息，包括项目信息、内容和章节</li>
-				<li>Markdown格式支持标题、列表等格式化内容</li>
-				<li>纯文本格式适合在普通文本编辑器中查看</li>
-				<li>导出的文件将自动下载到您的设备</li>
-			</ul>
+						<li>导出文件将包含项目的所有信息，包括项目信息、内容和章节</li>
+						<li>纯文本格式适合在普通文本编辑器中查看</li>
+						<li>PDF 格式适合打印和在PDF阅读器中查看</li>
+						<li>EPUB 格式适合在电子书阅读器中查看</li>
+						<li>导出的文件将自动下载到您的设备</li>
+					</ul>
 		</div>
 	{/if}
 </div>

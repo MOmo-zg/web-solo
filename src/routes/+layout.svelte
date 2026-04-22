@@ -109,9 +109,9 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex">
+<div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex flex-col md:flex-row">
 	<!-- 左侧边栏 -->
-	<div class={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen z-40 relative`}>
+	<div class={`${sidebarOpen ? 'w-64' : 'w-0 md:w-64'} bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen z-40 relative md:static fixed md:sticky top-0 left-0`}>
 		<div class="p-4 flex justify-between items-center shrink-0">
 			<div class="flex items-center space-x-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -119,7 +119,7 @@
 				</svg>
 				<span class="font-medium">Novel</span>
 			</div>
-			<button onclick={toggleSidebar} class="text-gray-400 hover:text-white" aria-label="切换侧边栏">
+			<button onclick={toggleSidebar} class="text-gray-400 hover:text-white md:hidden" aria-label="切换侧边栏">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
 				</svg>
@@ -362,7 +362,7 @@
 		<div class="bg-gray-50 dark:bg-gray-800 p-4 flex justify-between items-center">
 			<div class="flex items-center space-x-4">
 				{#if !sidebarOpen}
-					<button onclick={toggleSidebar} class="text-gray-400 hover:text-white" aria-label="打开侧边栏">
+					<button onclick={toggleSidebar} class="text-gray-400 hover:text-white md:hidden" aria-label="打开侧边栏">
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
 						</svg>
@@ -370,7 +370,7 @@
 				{/if}
 				<h1 class="text-xl font-semibold text-blue-400">小说创作助手</h1>
 			</div>
-			<button onclick={toggleRightSidebar} class="text-gray-400 hover:text-white" aria-label="切换右侧边栏">
+			<button onclick={toggleRightSidebar} class="text-gray-400 hover:text-white md:hidden" aria-label="切换右侧边栏">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
 				</svg>
@@ -384,7 +384,7 @@
 	</div>
 	
 	<!-- 右侧栏 -->
-	<div class={`${rightSidebarOpen ? 'w-80' : 'w-0'} bg-gray-50 dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen`}>
+	<div class={`${rightSidebarOpen ? 'w-80' : 'w-0'} bg-gray-50 dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out overflow-hidden flex flex-col h-screen md:hidden fixed top-0 right-0 z-50`}>
 		<div class="p-4 border-b border-gray-700 flex justify-between items-center">
 			<span class="font-medium">小说创作助手</span>
 			<button onclick={toggleRightSidebar} class="text-gray-400 hover:text-white" aria-label="关闭右侧边栏">

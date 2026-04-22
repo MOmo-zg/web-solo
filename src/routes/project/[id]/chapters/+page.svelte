@@ -155,16 +155,19 @@
 	<!-- 项目导航 -->
 	<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
 		<div class="flex space-x-4">
-			<a href={`/project/${projectId}`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
-				编辑内容
-			</a>
-			<a href={`/project/${projectId}/chapters`} class="px-4 py-2 rounded-md bg-blue-500 text-white font-medium">
-				章节管理
-			</a>
-			<a href={`/project/${projectId}/export`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
-				导出项目
-			</a>
-		</div>
+						<a href={`/project/${projectId}`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+							编辑内容
+						</a>
+						<a href={`/project/${projectId}/chapters`} class="px-4 py-2 rounded-md bg-blue-500 text-white font-medium">
+							章节管理
+						</a>
+						<a href={`/project/${projectId}/export`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+							导出项目
+						</a>
+						<a href={`/project/${projectId}/versions`} class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+							版本控制
+						</a>
+					</div>
 	</div>
 
 	<!-- 页面标题 -->

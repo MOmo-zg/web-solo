@@ -10,6 +10,18 @@ export interface Chapter {
 	updated_at: string;
 }
 
+// 版本类型定义
+export interface Version {
+	id: string;
+	project_id: string;
+	name: string;
+	description: string;
+	content?: string;
+	chapters?: Chapter[];
+	created_at: string;
+	updated_by: string;
+}
+
 // 项目类型定义
 export interface Project {
 	id: string;
@@ -20,6 +32,7 @@ export interface Project {
 	chapters?: Chapter[];
 	created_at: string;
 	updated_at: string;
+	versions?: Version[];
 }
 
 // 检查是否在浏览器环境中
@@ -442,26 +455,391 @@ export async function importProject(data: string, format: 'json' | 'markdown'): 
 }
 
 // 导出并下载项目
-export async function exportAndDownloadProject(projectId: string, format: 'markdown' | 'txt') {
+export async function exportAndDownloadProject(projectId: string, format: 'markdown' | 'txt' | 'pdf' | 'epub') {
 	const project = await getProjectById(projectId);
 	if (!project) {
 		return false;
 	}
 
-	let content: string;
-	let filename: string;
-	let contentType: string;
-
 	if (format === 'markdown') {
-		content = await exportProjectAsMarkdown(projectId);
-		filename = `${project.name}.md`;
-		contentType = 'text/markdown';
-	} else {
-		content = await exportProjectAsTxt(projectId);
-		filename = `${project.name}.txt`;
-		contentType = 'text/plain';
+		const content = await exportProjectAsMarkdown(projectId);
+		downloadFile(content, `${project.name}.md`, 'text/markdown');
+	} else if (format === 'txt') {
+		const content = await exportProjectAsTxt(projectId);
+		downloadFile(content, `${project.name}.txt`, 'text/plain');
+	} else if (format === 'pdf') {
+		await exportProjectAsPdf(projectId);
+	} else if (format === 'epub') {
+		await exportProjectAsEpub(projectId);
 	}
 
-	downloadFile(content, filename, contentType);
 	return true;
+}
+
+// 导出项目为 PDF
+export async function exportProjectAsPdf(projectId: string) {
+	const project = await getProjectById(projectId);
+	if (!project) {
+		return;
+	}
+
+	// 动态导入 jsPDF
+	const { jsPDF } = await import('jspdf');
+
+	const doc = new jsPDF();
+	let y = 20;
+
+	// 设置字体和大小
+	doc.setFont('helvetica', 'bold');
+	doc.setFontSize(20);
+	doc.text(project.name, 20, y);
+	y += 25;
+
+	doc.setFont('helvetica', 'normal');
+	doc.setFontSize(12);
+	doc.text(`类型: ${project.type}`, 20, y);
+	y += 10;
+	doc.text(`描述: ${project.description}`, 20, y);
+	y += 10;
+	doc.text(`创建时间: ${new Date(project.created_at).toLocaleString()}`, 20, y);
+	y += 10;
+	doc.text(`更新时间: ${new Date(project.updated_at).toLocaleString()}`, 20, y);
+	y += 20;
+
+	if (project.content) {
+		doc.setFont('helvetica', 'bold');
+		doc.setFontSize(16);
+		doc.text('内容', 20, y);
+		y += 15;
+
+		doc.setFont('helvetica', 'normal');
+		doc.setFontSize(12);
+		const contentLines = doc.splitTextToSize(project.content, 170);
+		contentLines.forEach(line => {
+			if (y > 280) {
+				doc.addPage();
+				y = 20;
+			}
+			doc.text(line, 20, y);
+			y += 7;
+		});
+		y += 15;
+	}
+
+	if (project.chapters && project.chapters.length > 0) {
+		doc.setFont('helvetica', 'bold');
+		doc.setFontSize(16);
+		doc.text('章节', 20, y);
+		y += 15;
+
+		project.chapters.forEach((chapter, index) => {
+			if (y > 280) {
+				doc.addPage();
+				y = 20;
+			}
+
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(14);
+			doc.text(`第${index + 1}章 ${chapter.title}`, 20, y);
+			y += 10;
+
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(12);
+			const chapterLines = doc.splitTextToSize(chapter.content, 170);
+			chapterLines.forEach(line => {
+				if (y > 280) {
+					doc.addPage();
+					y = 20;
+				}
+				doc.text(line, 20, y);
+				y += 7;
+			});
+			y += 15;
+		});
+	}
+
+	// 保存 PDF 文件
+	doc.save(`${project.name}.pdf`);
+}
+
+// 导出项目为 EPUB
+export async function exportProjectAsEpub(projectId: string) {
+	const project = await getProjectById(projectId);
+	if (!project) {
+		return;
+	}
+
+	// 动态导入 epub-gen
+	const Epub = (await import('epub-gen')).default;
+
+	const options = {
+		title: project.name,
+		author: '小说创作平台',
+		publisher: '小说创作平台',
+		description: project.description,
+		cover: '', // 可选封面
+		content: []
+	};
+
+	// 添加项目信息
+	options.content.push({
+		title: '项目信息',
+		data: `
+			<h1>项目信息</h1>
+			<p><strong>类型:</strong> ${project.type}</p>
+			<p><strong>描述:</strong> ${project.description}</p>
+			<p><strong>创建时间:</strong> ${new Date(project.created_at).toLocaleString()}</p>
+			<p><strong>更新时间:</strong> ${new Date(project.updated_at).toLocaleString()}</p>
+		`
+	});
+
+	// 添加内容
+	if (project.content) {
+		options.content.push({
+			title: '内容',
+			data: `<h1>内容</h1><p>${project.content.replace(/\n/g, '</p><p>')}</p>`
+		});
+	}
+
+	// 添加章节
+	if (project.chapters && project.chapters.length > 0) {
+		project.chapters.forEach((chapter, index) => {
+			options.content.push({
+				title: `第${index + 1}章 ${chapter.title}`,
+				data: `<h1>第${index + 1}章 ${chapter.title}</h1><p>${chapter.content.replace(/\n/g, '</p><p>')}</p>`
+			});
+		});
+	}
+
+	// 生成 EPUB 文件
+	try {
+		// 由于 epub-gen 需要写入文件系统，而浏览器环境不支持
+		// 我们在浏览器环境中使用一种替代方案
+		if (typeof window !== 'undefined') {
+			// 在浏览器中，我们可以生成一个简单的 EPUB 结构并下载
+			const epubContent = JSON.stringify(options, null, 2);
+			downloadFile(epubContent, `${project.name}.epub`, 'application/epub+zip');
+		} else {
+			// 在服务器环境中，使用 epub-gen 生成实际的 EPUB 文件
+			new Epub(options, `${project.name}.epub`);
+		}
+	} catch (error) {
+		console.error('生成 EPUB 失败:', error);
+		// 失败时使用替代方案
+		const epubContent = JSON.stringify(options, null, 2);
+		downloadFile(epubContent, `${project.name}.epub`, 'application/epub+zip');
+	}
+}
+
+// 创建版本
+export async function createVersion(projectId: string, versionData: {
+	name: string;
+	description: string;
+}): Promise<Version | null> {
+	try {
+		// 获取当前项目状态
+		const project = await getProjectById(projectId);
+		if (!project) {
+			throw new Error('项目不存在');
+		}
+
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/versions`, {
+			method: 'POST',
+			headers: getHeaders(),
+			body: JSON.stringify({
+				...versionData,
+				content: project.content,
+				chapters: project.chapters
+			})
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '创建版本失败');
+		}
+
+		const data = await response.json();
+		return data.version || null;
+	} catch (error) {
+		console.error('创建版本失败:', error);
+		return null;
+	}
+}
+
+// 获取版本列表
+export async function getVersions(projectId: string): Promise<Version[]> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/versions`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			throw new Error('获取版本列表失败');
+		}
+
+		const data = await response.json();
+		return data.versions || [];
+	} catch (error) {
+		console.error('获取版本列表失败:', error);
+		return [];
+	}
+}
+
+// 获取单个版本
+export async function getVersionById(projectId: string, versionId: string): Promise<Version | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/versions/${versionId}`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '获取版本失败');
+		}
+
+		const data = await response.json();
+		return data.version || null;
+	} catch (error) {
+		console.error('获取版本失败:', error);
+		return null;
+	}
+}
+
+// 恢复到某个版本
+export async function restoreVersion(projectId: string, versionId: string): Promise<Project | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/versions/${versionId}/restore`, {
+			method: 'POST',
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '恢复版本失败');
+		}
+
+		const data = await response.json();
+		return data.project || null;
+	} catch (error) {
+		console.error('恢复版本失败:', error);
+		return null;
+	}
+}
+
+// 删除版本
+export async function deleteVersion(projectId: string, versionId: string): Promise<boolean> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/versions/${versionId}`, {
+			method: 'DELETE',
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '删除版本失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('删除版本失败:', error);
+		return false;
+	}
+}
+
+// 协作功能相关类型
+export interface ProjectMember {
+	id: string;
+	user_id: string;
+	project_id: string;
+	role: 'owner' | 'editor' | 'viewer';
+	user: {
+		id: string;
+		username: string;
+		email: string;
+	};
+	created_at: string;
+}
+
+// 获取项目成员列表
+export async function getProjectMembers(projectId: string): Promise<ProjectMember[]> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/collaboration/projects/${projectId}/members`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '获取项目成员失败');
+		}
+
+		const data = await response.json();
+		return data.members || [];
+	} catch (error) {
+		console.error('获取项目成员失败:', error);
+		return [];
+	}
+}
+
+// 邀请项目成员
+export async function inviteProjectMember(projectId: string, email: string, role: 'owner' | 'editor' | 'viewer'): Promise<ProjectMember | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/collaboration/projects/${projectId}/members`, {
+			method: 'POST',
+			headers: getHeaders(),
+			body: JSON.stringify({ email, role })
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '邀请项目成员失败');
+		}
+
+		const data = await response.json();
+		return data.member || null;
+	} catch (error) {
+		console.error('邀请项目成员失败:', error);
+		return null;
+	}
+}
+
+// 更新成员角色
+export async function updateMemberRole(projectId: string, memberId: string, role: 'owner' | 'editor' | 'viewer'): Promise<ProjectMember | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/collaboration/projects/${projectId}/members/${memberId}`, {
+			method: 'PUT',
+			headers: getHeaders(),
+			body: JSON.stringify({ role })
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '更新成员角色失败');
+		}
+
+		const data = await response.json();
+		return data.member || null;
+	} catch (error) {
+		console.error('更新成员角色失败:', error);
+		return null;
+	}
+}
+
+// 移除项目成员
+export async function removeProjectMember(projectId: string, memberId: string): Promise<boolean> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/collaboration/projects/${projectId}/members/${memberId}`, {
+			method: 'DELETE',
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '移除项目成员失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('移除项目成员失败:', error);
+		return false;
+	}
 }

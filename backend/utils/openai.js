@@ -192,7 +192,7 @@ export async function generateNovelOutline(prompt, options = {}) {
       messages: [
         {
           role: 'system',
-          content: '你是一位专业的小说策划师，擅长为小说创作详细的大纲。请根据用户的提示，生成一个包含标题和章节大纲的完整小说大纲。'
+          content: '你是一位专业的小说策划师，擅长为小说创作详细的大纲。请根据用户的提示，生成一个包含标题和章节大纲的完整小说大纲。请以 JSON 格式返回，包含 title 和 chapters 字段，其中 chapters 是一个包含 title 和 description 字段的数组。'
         },
         {
           role: 'user',
@@ -206,15 +206,190 @@ export async function generateNovelOutline(prompt, options = {}) {
       presence_penalty: options.presencePenalty || 0
     });
 
-    return {
-      success: true,
-      outline: response.choices[0].message.content
-    };
+    try {
+      // 尝试解析 JSON 响应
+      const outline = JSON.parse(response.choices[0].message.content);
+      return {
+        success: true,
+        outline: outline
+      };
+    } catch (parseError) {
+      // 如果解析失败，返回原始响应
+      console.error('解析大纲 JSON 失败:', parseError);
+      return {
+        success: true,
+        outline: response.choices[0].message.content
+      };
+    }
   } catch (error) {
     console.error('OpenAI API 错误:', error);
     return {
       success: false,
       error: error.message || '生成大纲时出错'
+    };
+  }
+}
+
+// 分析小说内容
+export async function generateContentAnalysis(content, options = {}) {
+  try {
+    // 开发环境模拟响应
+    if (process.env.NODE_ENV !== 'production' || !process.env.OPENAI_API_KEY) {
+      // 模拟内容分析
+      const mockAnalysis = {
+        strengths: [
+          "情节紧凑，引人入胜",
+          "角色刻画生动",
+          "场景描写细致"
+        ],
+        weaknesses: [
+          "对话部分可以更加自然",
+          "部分场景转换略显突兀",
+          "配角性格可以更加丰富"
+        ],
+        suggestions: [
+          "增加一些角色的内心独白，增强读者的代入感",
+          "在场景转换时添加过渡句，使故事更加流畅",
+          "为配角添加一些独特的性格特点，使他们更加立体"
+        ],
+        rating: 8.5
+      };
+      
+      // 模拟网络延迟
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      return {
+        success: true,
+        analysis: mockAnalysis
+      };
+    }
+
+    // 生产环境使用真实 OpenAI API
+    const response = await openai.chat.completions.create({
+      model: options.model || 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: '你是一位专业的文学评论家，擅长分析小说内容并提供改进建议。请分析用户提供的小说内容，指出其优点、缺点，并给出具体的改进建议。请以 JSON 格式返回，包含 strengths（优点）、weaknesses（缺点）、suggestions（建议）和 rating（评分，1-10分）字段。'
+        },
+        {
+          role: 'user',
+          content: content
+        }
+      ],
+      temperature: options.temperature || 0.7,
+      max_tokens: options.maxTokens || 1000,
+      top_p: options.topP || 1,
+      frequency_penalty: options.frequencyPenalty || 0,
+      presence_penalty: options.presencePenalty || 0
+    });
+
+    try {
+      // 尝试解析 JSON 响应
+      const analysis = JSON.parse(response.choices[0].message.content);
+      return {
+        success: true,
+        analysis: analysis
+      };
+    } catch (parseError) {
+      // 如果解析失败，返回原始响应
+      console.error('解析分析 JSON 失败:', parseError);
+      return {
+        success: true,
+        analysis: response.choices[0].message.content
+      };
+    }
+  } catch (error) {
+    console.error('OpenAI API 错误:', error);
+    return {
+      success: false,
+      error: error.message || '分析内容时出错'
+    };
+  }
+}
+
+// 生成角色发展
+export async function generateCharacterDevelopment(characterInfo, options = {}) {
+  try {
+    // 开发环境模拟响应
+    if (process.env.NODE_ENV !== 'production' || !process.env.OPENAI_API_KEY) {
+      // 模拟角色发展
+      const mockCharacter = {
+        name: characterInfo.name || "未命名角色",
+        backstory: "角色的背景故事...",
+        personality: [
+          "勇敢",
+          "善良",
+          "有责任感"
+        ],
+        motivations: [
+          "保护家人",
+          "寻求正义",
+          "自我成长"
+        ],
+        characterArc: [
+          "第一章：平凡的开始",
+          "第二章：挑战与挫折",
+          "第三章：自我发现",
+          "第四章：成长与转变",
+          "第五章：最终的抉择"
+        ],
+        developmentSuggestions: [
+          "增加角色的内心冲突，使角色更加立体",
+          "为角色设置一个弱点，使其更加真实",
+          "通过对话和行动展示角色的性格，而不是直接叙述"
+        ]
+      };
+      
+      // 模拟网络延迟
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      return {
+        success: true,
+        character: mockCharacter
+      };
+    }
+
+    // 生产环境使用真实 OpenAI API
+    const response = await openai.chat.completions.create({
+      model: options.model || 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: '你是一位专业的角色设计师，擅长为小说创作详细的角色发展。请根据用户提供的角色信息，生成一个包含角色背景故事、性格特点、动机、角色弧线和发展建议的完整角色发展计划。请以 JSON 格式返回，包含 name（姓名）、backstory（背景故事）、personality（性格特点）、motivations（动机）、characterArc（角色弧线）和 developmentSuggestions（发展建议）字段。'
+        },
+        {
+          role: 'user',
+          content: JSON.stringify(characterInfo)
+        }
+      ],
+      temperature: options.temperature || 0.7,
+      max_tokens: options.maxTokens || 1500,
+      top_p: options.topP || 1,
+      frequency_penalty: options.frequencyPenalty || 0,
+      presence_penalty: options.presencePenalty || 0
+    });
+
+    try {
+      // 尝试解析 JSON 响应
+      const character = JSON.parse(response.choices[0].message.content);
+      return {
+        success: true,
+        character: character
+      };
+    } catch (parseError) {
+      // 如果解析失败，返回原始响应
+      console.error('解析角色 JSON 失败:', parseError);
+      return {
+        success: true,
+        character: response.choices[0].message.content
+      };
+    }
+  } catch (error) {
+    console.error('OpenAI API 错误:', error);
+    return {
+      success: false,
+      error: error.message || '生成角色发展时出错'
     };
   }
 }

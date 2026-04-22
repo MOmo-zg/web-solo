@@ -1,12 +1,15 @@
 import supabase from '../utils/supabase.js';
+import { logger } from '../utils/logger.js';
 
 // 创建项目
 export const createProject = async (req, res) => {
   try {
     const { name, type, description } = req.body;
+    logger.info('创建项目请求', { name, type, hasDescription: !!description });
 
     // 验证输入
     if (!name || !type) {
+      logger.warn('创建项目缺少必要参数', { error: '请填写项目名称和类型' });
       return res.status(400).json({ error: '请填写项目名称和类型' });
     }
 
@@ -20,6 +23,7 @@ export const createProject = async (req, res) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+      logger.info('开发环境创建项目成功', { projectId: mockProject.id, projectName: mockProject.name });
       return res.status(201).json({ project: mockProject });
     }
 
@@ -37,11 +41,14 @@ export const createProject = async (req, res) => {
       .single();
 
     if (error) {
+      logger.error('创建项目失败', { error: error.message });
       return res.status(500).json({ error: '创建项目时出错' });
     }
 
+    logger.info('创建项目成功', { projectId: project.id, projectName: project.name });
     res.status(201).json({ project });
   } catch (error) {
+    logger.error('创建项目时出错', { error: error.message, stack: error.stack });
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
       const { name, type, description } = req.body;
@@ -53,6 +60,7 @@ export const createProject = async (req, res) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+      logger.info('开发环境创建项目成功（异常处理）', { projectId: mockProject.id, projectName: mockProject.name });
       return res.status(201).json({ project: mockProject });
     }
     res.status(500).json({ error: '服务器内部错误' });
@@ -63,6 +71,7 @@ export const createProject = async (req, res) => {
 export const getProjects = async (req, res) => {
   try {
     const { search, type, sortBy, sortOrder } = req.query;
+    logger.info('获取项目列表请求', { search, type, sortBy, sortOrder });
 
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
@@ -131,6 +140,7 @@ export const getProjects = async (req, res) => {
         );
       }
 
+      logger.info('开发环境获取项目列表成功', { projectCount: mockProjects.length });
       return res.status(200).json({ projects: mockProjects });
     }
 
@@ -160,11 +170,14 @@ export const getProjects = async (req, res) => {
     const { data: projects, error } = await query;
 
     if (error) {
+      logger.error('获取项目列表失败', { error: error.message });
       return res.status(500).json({ error: '获取项目列表时出错' });
     }
 
+    logger.info('获取项目列表成功', { projectCount: projects.length });
     res.status(200).json({ projects });
   } catch (error) {
+    logger.error('获取项目列表时出错', { error: error.message, stack: error.stack });
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
       const { search, type, sortBy, sortOrder } = req.query;
@@ -233,6 +246,7 @@ export const getProjects = async (req, res) => {
         );
       }
 
+      logger.info('开发环境获取项目列表成功（异常处理）', { projectCount: mockProjects.length });
       return res.status(200).json({ projects: mockProjects });
     }
     res.status(500).json({ error: '服务器内部错误' });
@@ -243,6 +257,7 @@ export const getProjects = async (req, res) => {
 export const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
+    logger.info('获取单个项目请求', { projectId: id });
 
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
@@ -254,6 +269,7 @@ export const getProjectById = async (req, res) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+      logger.info('开发环境获取单个项目成功', { projectId: id, projectName: mockProject.name });
       return res.status(200).json({ project: mockProject });
     }
 
@@ -266,13 +282,17 @@ export const getProjectById = async (req, res) => {
 
     if (error) {
       if (error.code === 'PGRST116') {
+        logger.warn('项目不存在', { projectId: id });
         return res.status(404).json({ error: '项目不存在' });
       }
+      logger.error('获取项目失败', { projectId: id, error: error.message });
       return res.status(500).json({ error: '获取项目时出错' });
     }
 
+    logger.info('获取单个项目成功', { projectId: project.id, projectName: project.name });
     res.status(200).json({ project });
   } catch (error) {
+    logger.error('获取单个项目时出错', { projectId: req.params.id, error: error.message, stack: error.stack });
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
       const { id } = req.params;
@@ -284,6 +304,7 @@ export const getProjectById = async (req, res) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+      logger.info('开发环境获取单个项目成功（异常处理）', { projectId: id, projectName: mockProject.name });
       return res.status(200).json({ project: mockProject });
     }
     res.status(500).json({ error: '服务器内部错误' });
@@ -295,9 +316,11 @@ export const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, type, description } = req.body;
+    logger.info('更新项目请求', { projectId: id, name, type, hasDescription: !!description });
 
     // 验证输入
     if (!name || !type) {
+      logger.warn('更新项目缺少必要参数', { projectId: id, error: '请填写项目名称和类型' });
       return res.status(400).json({ error: '请填写项目名称和类型' });
     }
 
@@ -311,6 +334,7 @@ export const updateProject = async (req, res) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+      logger.info('开发环境更新项目成功', { projectId: id, projectName: mockProject.name });
       return res.status(200).json({ project: mockProject });
     }
 
@@ -329,13 +353,17 @@ export const updateProject = async (req, res) => {
 
     if (error) {
       if (error.code === 'PGRST116') {
+        logger.warn('项目不存在', { projectId: id });
         return res.status(404).json({ error: '项目不存在' });
       }
+      logger.error('更新项目失败', { projectId: id, error: error.message });
       return res.status(500).json({ error: '更新项目时出错' });
     }
 
+    logger.info('更新项目成功', { projectId: project.id, projectName: project.name });
     res.status(200).json({ project });
   } catch (error) {
+    logger.error('更新项目时出错', { projectId: req.params.id, error: error.message, stack: error.stack });
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
       const { id } = req.params;
@@ -348,6 +376,7 @@ export const updateProject = async (req, res) => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+      logger.info('开发环境更新项目成功（异常处理）', { projectId: id, projectName: mockProject.name });
       return res.status(200).json({ project: mockProject });
     }
     res.status(500).json({ error: '服务器内部错误' });
@@ -358,9 +387,11 @@ export const updateProject = async (req, res) => {
 export const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
+    logger.info('删除项目请求', { projectId: id });
 
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
+      logger.info('开发环境删除项目成功', { projectId: id });
       return res.status(200).json({ message: '项目删除成功' });
     }
 
@@ -371,13 +402,17 @@ export const deleteProject = async (req, res) => {
       .eq('id', id);
 
     if (error) {
+      logger.error('删除项目失败', { projectId: id, error: error.message });
       return res.status(500).json({ error: '删除项目时出错' });
     }
 
+    logger.info('删除项目成功', { projectId: id });
     res.status(200).json({ message: '项目删除成功' });
   } catch (error) {
+    logger.error('删除项目时出错', { projectId: req.params.id, error: error.message, stack: error.stack });
     // 开发环境模拟响应
     if (process.env.NODE_ENV !== 'production') {
+      logger.info('开发环境删除项目成功（异常处理）', { projectId: req.params.id });
       return res.status(200).json({ message: '项目删除成功' });
     }
     res.status(500).json({ error: '服务器内部错误' });

@@ -6,6 +6,8 @@ import projectRoutes from './routes/projectRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import versionRoutes from './routes/versionRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import collaborationRoutes from './routes/collaborationRoutes.js';
+import { logger, accessLogMiddleware, errorHandlerMiddleware, notFoundMiddleware } from './utils/logger.js';
 
 // 加载环境变量
 dotenv.config();
@@ -16,6 +18,7 @@ const PORT = process.env.PORT || 3001;
 // 中间件
 app.use(cors());
 app.use(express.json());
+app.use(accessLogMiddleware);
 
 // 路由
 app.get('/', (req, res) => {
@@ -37,7 +40,16 @@ app.use('/api/versions', versionRoutes);
 // AI 路由
 app.use('/api/ai', aiRoutes);
 
+// 协作路由
+app.use('/api/collaboration', collaborationRoutes);
+
+// 404 处理
+app.use(notFoundMiddleware);
+
+// 错误处理
+app.use(errorHandlerMiddleware);
+
 // 启动服务器
 app.listen(PORT, () => {
-  console.log(`服务器运行在 http://localhost:${PORT}`);
+  logger.info(`服务器运行在 http://localhost:${PORT}`);
 });
