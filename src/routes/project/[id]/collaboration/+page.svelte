@@ -216,7 +216,7 @@
 				<p>{inviteError}</p>
 			</div>
 		{/if}
-		<form on:submit|preventDefault={handleInviteMember} class="space-y-4">
+		<form onsubmit={e => { e.preventDefault(); handleInviteMember(); }} class="space-y-4">
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div>
 					<label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">邮箱地址</label>
@@ -303,7 +303,10 @@
 								<div class="mb-2">
 									<select
 										value={member.role}
-										on:change={(e) => handleUpdateRole(member.id, e.target.value as 'owner' | 'editor' | 'viewer')}
+										onchange={(e) => {
+                                    const target = e.target as HTMLSelectElement;
+                                    handleUpdateRole(member.id, target.value as 'owner' | 'editor' | 'viewer');
+                                }}
 										disabled={isUpdatingRole || member.role === 'owner'}
 										class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
 									>

@@ -10,6 +10,34 @@ export interface Chapter {
 	updated_at: string;
 }
 
+// 角色类型定义
+export interface Character {
+	id: string;
+	project_id: string;
+	name: string;
+	alias?: string;
+	description: string;
+	appearance?: string;
+	personality?: string;
+	background?: string;
+	relationships?: string;
+	image_url?: string;
+	created_at: string;
+	updated_at: string;
+}
+
+// 世界观/设定类型定义
+export interface WorldSetting {
+	id: string;
+	project_id: string;
+	name: string;
+	type: string;
+	description: string;
+	content?: string;
+	created_at: string;
+	updated_at: string;
+}
+
 // 版本类型定义
 export interface Version {
 	id: string;
@@ -30,6 +58,8 @@ export interface Project {
 	description: string;
 	content?: string;
 	chapters?: Chapter[];
+	characters?: Character[];
+	worldSettings?: WorldSetting[];
 	created_at: string;
 	updated_at: string;
 	versions?: Version[];
@@ -946,6 +976,216 @@ export async function removeProjectMember(projectId: string, memberId: string): 
 		return true;
 	} catch (error) {
 		console.error('移除项目成员失败:', error);
+		return false;
+	}
+}
+
+// 角色管理功能
+
+// 获取角色列表
+export async function getCharacters(projectId: string): Promise<Character[]> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/characters`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			throw new Error('获取角色列表失败');
+		}
+
+		const data = await response.json();
+		return data.characters || [];
+	} catch (error) {
+		console.error('获取角色列表失败:', error);
+		return [];
+	}
+}
+
+// 获取单个角色
+export async function getCharacterById(projectId: string, characterId: string): Promise<Character | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/characters/${characterId}`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '获取角色失败');
+		}
+
+		const data = await response.json();
+		return data.character || null;
+	} catch (error) {
+		console.error('获取角色失败:', error);
+		return null;
+	}
+}
+
+// 添加角色
+export async function addCharacter(projectId: string, character: Omit<Character, 'id' | 'project_id' | 'created_at' | 'updated_at'>): Promise<Character | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/characters`, {
+			method: 'POST',
+			headers: getHeaders(),
+			body: JSON.stringify(character)
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '添加角色失败');
+		}
+
+		const data = await response.json();
+		return data.character || null;
+	} catch (error) {
+		console.error('添加角色失败:', error);
+		return null;
+	}
+}
+
+// 更新角色
+export async function updateCharacter(projectId: string, characterId: string, updates: Partial<Omit<Character, 'id' | 'project_id' | 'created_at'>>): Promise<Character | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/characters/${characterId}`, {
+			method: 'PUT',
+			headers: getHeaders(),
+			body: JSON.stringify(updates)
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '更新角色失败');
+		}
+
+		const data = await response.json();
+		return data.character || null;
+	} catch (error) {
+		console.error('更新角色失败:', error);
+		return null;
+	}
+}
+
+// 删除角色
+export async function deleteCharacter(projectId: string, characterId: string): Promise<boolean> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/characters/${characterId}`, {
+			method: 'DELETE',
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '删除角色失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('删除角色失败:', error);
+		return false;
+	}
+}
+
+// 世界观/设定管理功能
+
+// 获取世界观/设定列表
+export async function getWorldSettings(projectId: string): Promise<WorldSetting[]> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/world-settings`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			throw new Error('获取世界观/设定列表失败');
+		}
+
+		const data = await response.json();
+		return data.worldSettings || [];
+	} catch (error) {
+		console.error('获取世界观/设定列表失败:', error);
+		return [];
+	}
+}
+
+// 获取单个世界观/设定
+export async function getWorldSettingById(projectId: string, settingId: string): Promise<WorldSetting | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/world-settings/${settingId}`, {
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '获取世界观/设定失败');
+		}
+
+		const data = await response.json();
+		return data.worldSetting || null;
+	} catch (error) {
+		console.error('获取世界观/设定失败:', error);
+		return null;
+	}
+}
+
+// 添加世界观/设定
+export async function addWorldSetting(projectId: string, setting: Omit<WorldSetting, 'id' | 'project_id' | 'created_at' | 'updated_at'>): Promise<WorldSetting | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/world-settings`, {
+			method: 'POST',
+			headers: getHeaders(),
+			body: JSON.stringify(setting)
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '添加世界观/设定失败');
+		}
+
+		const data = await response.json();
+		return data.worldSetting || null;
+	} catch (error) {
+		console.error('添加世界观/设定失败:', error);
+		return null;
+	}
+}
+
+// 更新世界观/设定
+export async function updateWorldSetting(projectId: string, settingId: string, updates: Partial<Omit<WorldSetting, 'id' | 'project_id' | 'created_at'>>): Promise<WorldSetting | null> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/world-settings/${settingId}`, {
+			method: 'PUT',
+			headers: getHeaders(),
+			body: JSON.stringify(updates)
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '更新世界观/设定失败');
+		}
+
+		const data = await response.json();
+		return data.worldSetting || null;
+	} catch (error) {
+		console.error('更新世界观/设定失败:', error);
+		return null;
+	}
+}
+
+// 删除世界观/设定
+export async function deleteWorldSetting(projectId: string, settingId: string): Promise<boolean> {
+	try {
+		const response = await fetch(`http://localhost:3001/api/projects/${projectId}/world-settings/${settingId}`, {
+			method: 'DELETE',
+			headers: getHeaders()
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || '删除世界观/设定失败');
+		}
+
+		return true;
+	} catch (error) {
+		console.error('删除世界观/设定失败:', error);
 		return false;
 	}
 }
